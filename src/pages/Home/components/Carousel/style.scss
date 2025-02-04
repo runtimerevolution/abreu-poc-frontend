@@ -1,0 +1,130 @@
+
+.image-carousel {
+  position: relative;
+
+  &_image {
+    position: relative;
+    overflow: hidden;
+
+    object-fit: cover;
+
+    width: 100%;
+    height: 450px !important;
+
+    &-wrapper {
+      height: 450px;
+      z-index: 1;
+      position: absolute;
+      width: 100%;
+      top: 0px;
+      box-shadow: inset 3px -35px 25px -4px #FFFFFF, 1px -4px 18px -20px #FFFFFF;;
+    }
+  }
+
+  &_item {
+    width: 100%;
+  }
+
+  &_caption {
+    bottom: 7.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &-a {
+      text-decoration: none;
+      font-family: 'Lato', sans-serif;
+    }
+  }
+
+  &_control-icon {
+    color: #158cba;
+  }
+}
+
+.carousel-control-next {
+  position: absolute;
+  top: 42%;
+  z-index: 2;
+
+  font-size: 25px;
+  text-decoration: none;
+
+  border-radius: 56px 0px 0px 56px;
+  box-shadow: 0px 3px 6px #00000029;
+
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  opacity: 0.8;
+
+  width: 57px;
+  height: 76px;
+}
+
+.carousel-control-prev {
+  position: absolute;
+  top: 42%;
+
+  font-size: 25px;
+  text-decoration: none;
+
+  border-radius: 0px 56px 56px 0px;
+  box-shadow: 0px 3px 6px #00000029;
+
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  opacity: 0.8;
+
+  width: 57px;
+  height: 76px;
+}
+
+.caption-btn {
+  text-decoration: none;
+  font-family: 'Lato', sans-serif;
+
+  background: #F1910F 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000099;
+  border-radius: 60px;
+  letter-spacing: 0px;
+  color: #FFF;
+  font-size: 16px;
+  line-height: 19px;
+  padding: 8px 30px;
+  text-decoration: none !important;
+  margin-top: 15px;
+  display: inline-block;
+  transition: opacity 0.1s ease;
+  border: 0px;
+  position: relative;
+  z-index: 11;
+}
+
+.caption-text {
+  text-decoration: none;
+  font-family: 'Lato', sans-serif;
+
+  &_title {
+    letter-spacing: 0px;
+    color: #FFF;
+    text-shadow: 0px 3px 6px #00000099;
+    font-size: 120px;
+    line-height: 120px;
+    font-weight: 900;
+    margin: 0;
+  }
+
+  &_sub-title {
+    letter-spacing: 0px;
+    color: #FFF;
+    text-shadow: 0px 3px 6px #00000099;
+    font-size: 50px;
+    line-height: 60px;
+    font-weight: 900;
+  }
+}
+
+.banner-img {
+  left: 50%;
+  position: absolute;
+  top: 5%;
+  transform: translateX(-50%);
+}

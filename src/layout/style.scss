@@ -1,0 +1,43 @@
+
+.default-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  &_nav {
+    margin-bottom: 0 !important;
+    margin-right: auto !important;
+  }
+
+  &_nav-brand {
+    margin-right: 25px;
+  }
+
+  &_nav-link {
+    font-family: 'Lato', sans-serif !important;
+    text-transform: uppercase;
+    font-size: 1rem !important;
+    font-weight: bold !important;
+    line-height: 1.5 !important;
+    color: #54667A !important;
+
+    &:hover {
+      color: #3EB8E7 !important;
+      border-bottom: 3px solid #3EB8E7;
+    }
+  }
+
+  &_phone {
+    font-family: 'Lato', sans-serif !important;
+    color: #7E9422;
+    font-size: 22px;
+    font-weight: 900;
+    text-decoration: none;
+  }
+}
+
+
+.default-layout_nav-link.active {
+  color: #3EB8E7 !important;
+  border-bottom: 3px solid #3EB8E7;
+}

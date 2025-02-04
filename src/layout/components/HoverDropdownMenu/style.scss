@@ -1,0 +1,17 @@
+
+.hover-dropdown-menu {
+  position: relative;
+
+  &_content {
+    position: fixed;
+    left: 0;
+    top: 97px;
+    z-index: 99999;
+
+    width: 100vw;
+    padding: 15px 0;
+
+    background: #158CBA 0% 0% no-repeat padding-box;
+    opacity: 0.96;
+  }
+}
