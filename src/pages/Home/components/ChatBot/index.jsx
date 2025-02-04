@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import { Button, Col, Container, FormControl, InputGroup, Spinner } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faClose, faComment, faRobot } from "@fortawesome/free-solid-svg-icons"
-import { useMutation } from "@tanstack/react-query"
 
 import './style.scss'
-import axios from "axios";
+
+const PROMPT_PROPS = ['destination', 'origin', 'when', 'who']
+const initialPrompts = PROMPT_PROPS.map((key) => ({ key, value: '' }))
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
@@ -20,25 +21,34 @@ const timeOfDay = () => {
   return null
 }
 
-const ChatBotMessage = ({ message, type = 'bot', timeStamp }) => {
-  const renderMessage = () => {
-    const { text, link } = message
-    const messageStyle = type === 'user' ? 'chatbot__message-user' : 'chatbot__message-bot'
-
-    return (
-      <div className={messageStyle}>
-        <p>{text}</p>
-      </div>
-    )
+const generateBotMsg = (nextKey) => {
+  let chatMessage = { type: 'bot', message: '', timeStamp: moment() }
+  switch (nextKey) {
+    case 'destination':
+      chatMessage.message = 'Para onde deseja viajar? (Cidade ou País)'
+      break
+    case 'when':
+      chatMessage.message = 'Quando pretende ir? (Data de ínicio e fim ou Data de ínicio e duração)'
+      break
+    case 'origin':
+      chatMessage.message = 'De onde é que vai sair ? (Cidade ou País)'
+      break
+    case 'who':
+      chatMessage.message = 'Quantas pessoas irão ?'
+      break
   }
+  return chatMessage
+}
 
+const ChatBotMessage = ({ message, type = 'bot', timeStamp }) => {
+  const messageStyle = type === 'user' ? 'chatbot__message-user' : 'chatbot__message-bot'
   const messageStyleId = type === 'user' ? 'tms_user' : 'tms_bot'
   const messageAlignment = type === 'user' ? 'chatbot__message-align-right' : 'chatbot__message-align-left'
 
   return (
     <div className={`chatbot__message ${messageAlignment}`}>
       <div className='chatbot__message-info'>
-        {renderMessage()}
+        <p className={messageStyle}>{message}</p>
         <p id={messageStyleId} className='chatbot__message-time'>{timeStamp.format('HH:mm:ss')}</p>
       </div>
     </div>
@@ -51,17 +61,31 @@ ChatBotMessage.propTypes = {
   timeStamp: PropTypes.instanceOf(moment).isRequired
 }
 
+// {
+//   destination: '',
+//     date: '',
+//       when: '',
+//         who: ''
+// }
+
 const ChatBot = () => {
-  const [chatLog, setChatLog] = useState([])
+  const [currentPrompt, setCurrentPrompt] = useState('destination')
+  const [prompts, setPrompts] = useState(initialPrompts)
+  const [chatHistory, setChatHistory] = useState([])
+
   const [isThonking, setIsThonking] = useState(false)
   const [userPrompt, setUserPrompt] = useState('')
 
   const resetChatLog = useCallback(() => {
-    const initialMessage = {
-      text: `Olá, ${timeOfDay()}! Para onde deseja viajar? Em que altura ou data, se possível?`,
-      link: false
-    }
-    setChatLog([{ type: 'bot', message: initialMessage, timeStamp: moment() }])
+    setCurrentPrompt('destination')
+    setPrompts(initialPrompts)
+    setChatHistory([
+      {
+        type: 'bot',
+        message: `Olá, ${timeOfDay()}! Para onde deseja viajar?`,
+        timeStamp: moment(),
+      }
+    ])
   }, [])
 
   const sendResetToAPI = useCallback(async () => {
@@ -80,49 +104,42 @@ const ChatBot = () => {
     setIsThonking(false)
   }, [resetChatLog])
 
-  const sendPromptToAPI = useCallback(async (userPrompt) => {
-    const newLog = [...chatLog, { type: 'user', message: { text: userPrompt, link: false }, timeStamp: moment() }]
-    setChatLog(newLog)
+  const sendPromptToAPI = useCallback(async (_prompts, updatedChatLog) => {
     setIsThonking(true)
 
     // await sleep(Math.floor(Math.random() * 10000) + 1)
 
-    const botResponse = `Desculpe, não entendi o que você quis dizer com "${userPrompt}". Poderia reformular?`
 
-    setChatLog([
-      ...newLog,
-      {
-        type: 'bot',
-        message: { text: botResponse, link: false },
-        timeStamp: moment()
-      }
-    ])
+    // const options = {
+    //   method: 'POST',
+    //   credentials: 'include',
+    //   headers: {
+    //     'Content-Type': 'application/json',
 
-    const options = {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({ userPrompt })
+    // }
 
-      },
-      body: JSON.stringify({ userPrompt })
-    }
-
-    const response = await axios.post('TESTE', { userPrompt })
+    // const response = await axios.post('TESTE', { userPrompt })
+    setChatHistory([...updatedChatLog, {
+      type: 'bot',
+      message: `Desculpe, não foi possivel. Poderia tentar outra vez?`,
+      timeStamp: moment()
+    }])
 
     // const response = await fetch('TO_CHANGE', options)
     setIsThonking(false)
     // return response.json()
-  }, [chatLog, setChatLog])
+  }, [])
 
   useEffect(() => {
     resetChatLog()
   }, [])
 
-  const { mutate, isPending } = useMutation({
-    mutationKey: ['chatbot', userPrompt],
-    mutationFn: sendPromptToAPI
-  })
+  useEffect(() => {
+    const missingPrompts = prompts.filter(({ value }) => !value)
+    if (!missingPrompts.length) sendPromptToAPI(prompts)
+  }, [prompts, sendPromptToAPI])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSendPrompt()
@@ -132,11 +149,25 @@ const ChatBot = () => {
 
   const handleSendPrompt = useCallback(async () => {
     if (!userPrompt) return
-    mutate(userPrompt)
-    setUserPrompt('')
-  }, [userPrompt, mutate])
+    const updatedChatLog = [...chatHistory, { type: 'user', message: userPrompt, timeStamp: moment() }]
+    const _prompts = prompts.map((p) => p.key === currentPrompt ? { key: p.key, value: userPrompt } : p)
 
-  const reversedChatLog = chatLog.toReversed();
+    setPrompts(_prompts)
+    setUserPrompt('')
+
+    const missingPrompts = _prompts.filter(({ value }) => !value)
+    if (missingPrompts.length) {
+      const nextKey = missingPrompts[0].key
+      setCurrentPrompt(nextKey)
+      updatedChatLog.push(generateBotMsg(nextKey))
+    }
+    setChatHistory(updatedChatLog)
+
+    if (!missingPrompts.length) await sendPromptToAPI(_prompts, updatedChatLog)
+  }, [userPrompt, prompts, currentPrompt, chatHistory, sendPromptToAPI])
+
+  const reversedChatLog = chatHistory.toReversed();
+  const hasUserMessages = chatHistory.some(({ type }) => type === 'user')
   return (
     <>
       <div className="chatbot__divider" />
@@ -148,9 +179,9 @@ const ChatBot = () => {
 
         <Col>
           <InputGroup>
-            {chatLog.length > 2 && (
+            {hasUserMessages && (
               <Button
-                disabled={isPending || isThonking}
+                disabled={isThonking}
                 className="chatbot__send-btn"
                 variant="primary"
                 onClick={handleResetChat}
@@ -164,12 +195,12 @@ const ChatBot = () => {
               value={userPrompt}
               onChange={handleUserPrompt}
               placeholder="Responda aqui..."
-              disabled={isPending || isThonking}
+              disabled={isThonking}
               onKeyDown={handleKeyDown}
             />
 
             <Button
-              disabled={isPending || isThonking}
+              disabled={isThonking}
               className="chatbot__send-btn"
               variant="primary"
               onClick={handleSendPrompt}
@@ -181,7 +212,7 @@ const ChatBot = () => {
           <div className="chatbot__sub-divider" />
 
           <Container className="chatbot__messages">
-            {(isPending || isThonking) && (
+            {isThonking && (
               <div className='chatbot__message'>
                 <div className='chatbot__message-empty' />
 
@@ -197,9 +228,9 @@ const ChatBot = () => {
               </div>
             )}
 
-            {reversedChatLog.map(({ type, message, timeStamp }) => (
+            {reversedChatLog.map(({ type, message, timeStamp }, index) => (
               <ChatBotMessage
-                key={timeStamp.format("M_D_YYYY_h_mm_ss_a")}
+                key={timeStamp.format("M_D_YYYY_h_mm_ss_a") + index}
                 type={type}
                 message={message}
                 timeStamp={timeStamp}
