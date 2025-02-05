@@ -30,7 +30,12 @@ const ChatBot = () => {
     setChatHistory([
       {
         type: 'bot',
-        message: `Olá, ${timeOfDay()}! Para onde deseja viajar?`,
+        message: `Olá, ${timeOfDay()}! Bem vindo ao assitente virtual.`,
+        timeStamp: moment(),
+      },
+      {
+        type: 'bot',
+        message: `Qual o destino da tua viagem ?`,
         timeStamp: moment(),
       }
     ])

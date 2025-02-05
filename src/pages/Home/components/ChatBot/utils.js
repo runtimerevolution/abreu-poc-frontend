@@ -16,22 +16,31 @@ export const timeOfDay = () => {
 export const generateBotMsg = (nextKey) => {
   let chatMessage = { type: 'bot', message: '', timeStamp: moment() }
   switch (nextKey) {
-    case 'destination':
-      chatMessage.message = 'Para onde deseja viajar? (Cidade ou País)'
-      break
     case 'when':
-      chatMessage.message = 'Quando pretende ir? (Data de ínicio e fim ou Data de ínicio e duração)'
+      chatMessage.message = 'Quando pretendes ir? (Exemplo: 12 de Janeiro a 15 de Janeiro)'
       break
     case 'origin':
-      chatMessage.message = 'De onde é que vai sair ? (Cidade ou País)'
+      chatMessage.message = 'De onde é que vais viajar ?'
       break
     case 'who':
-      chatMessage.message = 'Quantas pessoas irão ?'
+      chatMessage.message = 'Quantas pessoas vão ?'
       break
   }
   return chatMessage
 }
 
+export const getDayPeriodFromIndex = (index) => {
+  switch (index) {
+    case 0:
+      return 'Manhã:'
+    case 1:
+      return 'Tarde:'
+    case 2:
+      return 'Noite:'
+    default:
+      return "Desconhecido:"
+  }
+}
 
 export const generateRandomOption = (hasCity = '') => {
   const option = {
@@ -48,6 +57,12 @@ export const generateRandomOption = (hasCity = '') => {
       "Sobrino de Botín",
       "DiverXO"
     ],
+    hotel_list: [
+      "Hotel Regina",
+      "Hotel Emperador",
+      "Hotel Catalonia Plaza Mayor"
+    ],
+    short_description: "Cidade vibrante com rica história e cultura em Espanha.",
     small_history: "Madrid, a capital de Espanha, é uma cidade com uma rica história que remonta ao século IX. Tornou-se a capital do país em 1561 sob o reinado de Felipe II. A cidade é conhecida pela sua arquitetura histórica, museus de renome mundial e uma vibrante cena cultural.",
     activities_per_day: {
       "1st": {

@@ -1,31 +1,23 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // Components
-import { Button, Container } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import DialogPlano from './DialogPlano';
 // Assets
 //Styles
 import './style.scss'
 
-const Option = ({ select = false, data, onSelect }) => {
-  const { destination } = data
+const Option = ({ data, onSelect }) => {
+  const { destination, short_description } = data
 
   return (
-    <div className='chat-selection_option'>
-      <img className='chat-selection_option_img' src={data.image} alt={destination} />
-
-      <div className='chat-selection_option_info'>
+    <div className='chat-selection_option' onClick={() => onSelect(data)}>
+      <figure className='chat-selection_option_info'>
+        <img className='chat-selection_option_img' src={data.image} alt={destination} />
         <h5>{destination}</h5>
+      </figure>
 
-        <Button
-          className='chat-selection_option_btn'
-          onClick={() => onSelect(data)}
-          variant='primary'
-          size='sm'
-        >
-          {select ? 'Selecionar' : 'Ver Plano'}
-        </Button>
-      </div>
+      <p>{short_description}</p>
     </div>
   )
 }

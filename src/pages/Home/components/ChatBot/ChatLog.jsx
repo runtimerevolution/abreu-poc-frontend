@@ -17,7 +17,7 @@ const ChatLogLoader = () => {
         <p className='chatbot__message-bot' >
           <FontAwesomeIcon icon={faRobot} />
 
-          Estou a pensar...
+          Estou a gerar os teus relatórios aguarda um momento...
 
           <Spinner className='chatbot__message-spinner' animation="border" />
         </p>
@@ -51,7 +51,7 @@ ChatBotMessage.propTypes = {
 const ChatLog = ({ messages, loading = false }) => {
   return (
     <Container className="chatbot__messages">
-      {loading && (<ChatLogLoader />)}
+      {loading && <ChatLogLoader />}
 
       {messages.map(({ type, message, timeStamp }, index) => {
         const keyID = timeStamp.format("M_D_YYYY_h_mm_ss_a") + index
