@@ -1,22 +1,25 @@
 import { useCallback, useEffect, useState } from "react"
 import moment from 'moment'
 import { v4 } from "uuid";
+// Components
 import { Button, Col, Container, FormControl, InputGroup } from "react-bootstrap"
 import ChatLog from "./ChatLog";
-import ChatOptionSelection from "./ChatOptionSelection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faClose, faComment, faRobot } from "@fortawesome/free-solid-svg-icons"
-
-import './style.scss'
+// Utils
 import { generateBotMsg, generateRandomOption, timeOfDay } from "./utils";
+// Assets
+import { faClose, faComment, faRobot } from "@fortawesome/free-solid-svg-icons"
+// Styles
+import './style.scss'
+import ReportSelection from "./ReportSelection";
 
 const PROMPT_PROPS = ['destination', 'origin', 'when', 'who']
 const initialPrompts = PROMPT_PROPS.map((key) => ({ key, value: '' }))
-const sessionId = v4()
-const api_url = 'https://abreu-ai-poc-9f2880723694.herokuapp.com/'
+const api_url = 'https://abreu-ai-poc-9f2880723694.herokuapp.com'
 
 const ChatBot = () => {
   const [currentPrompt, setCurrentPrompt] = useState('destination')
+  const [sessionID, setSessionID] = useState(v4())
   const [prompts, setPrompts] = useState(initialPrompts)
   const [chatHistory, setChatHistory] = useState([])
   const [chatOptions, setChatOptions] = useState([])
@@ -50,26 +53,6 @@ const ChatBot = () => {
 
   const sendResetToAPI = useCallback(async () => {
     setIsThonking(true)
-    const options = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_session: sessionId,
-        prompt: prompts
-      })
-    }
-    const response = await fetch(api_url, options)
-    if (response.ok) {
-      const data = response.json()
-      setChatOptions(data)
-    } else {
-      setChatHistory([...chatHistory, {
-        type: 'bot',
-        message: `Desculpe, não foi possivel gerar opções. Poderia tentar outra vez?`,
-        timeStamp: moment()
-      }])
-    }
-
     // return response.json()
     resetChatLog()
     setIsThonking(false)
@@ -78,33 +61,48 @@ const ChatBot = () => {
   const sendPromptToAPI = useCallback(async (_prompts, updatedChatLog) => {
     setIsThonking(true)
 
-    // await sleep(Math.floor(Math.random() * 10000) + 1)
+    const promptObject = {}
+    _prompts.forEach(({ key, value }) => promptObject[key] = value)
 
-
-    // const options = {
-    //   method: 'POST',
-    //   credentials: 'include',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-
-    //   },
-    //   body: JSON.stringify({ userPrompt })
-    // }
-
-    // const response = await axios.post('TESTE', { userPrompt })
-    setChatHistory([...updatedChatLog, {
-      type: 'bot',
-      message: `Desculpe, não foi possivel. Poderia tentar outra vez?`,
-      timeStamp: moment()
-    }])
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_session: sessionID,
+        prompt: promptObject
+      })
+    }
+    const response = await fetch(`${api_url}/prompt`, options)
+    if (response.ok) {
+      const data = await response.json()
+      console.log(data)
+      if (Array.isArray(data)) setChatOptions(data)
+      else setChatOptions([data])
+    } else {
+      setCurrentPrompt('destination')
+      setPrompts(initialPrompts)
+      setChatHistory([
+        ...updatedChatLog, {
+          type: 'bot',
+          message: `Desculpa, não foi possivel gerar relatórios. Tenta outra vez!`,
+          timeStamp: moment()
+        },
+        {
+          type: 'bot',
+          message: `Qual o destino da tua viagem ?`,
+          timeStamp: moment(),
+        }
+      ])
+    }
 
     // const response = await fetch('TO_CHANGE', options)
     setIsThonking(false)
     // return response.json()
-  }, [])
+  }, [sessionID])
 
   useEffect(() => {
     resetChatLog()
+    setSessionID(v4())
   }, [])
 
   const handleKeyDown = (e) => {
@@ -179,7 +177,7 @@ const ChatBot = () => {
 
           <div className="chatbot__sub-divider" />
 
-          <ChatOptionSelection options={chatOptions} />
+          <ReportSelection options={chatOptions} />
         </Col >
       </Container >
     </>

@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import moment from 'moment';
 // Components
-import { Button, Modal } from 'react-bootstrap';
 // Assets
 //Styles
 import './style.scss'
+import { getDayPeriodFromIndex } from '../utils';
 
 const PDFReport = ({ data, innerRef }) => {
   if (!data) return null
@@ -37,25 +37,28 @@ const PDFReport = ({ data, innerRef }) => {
 
               return (
                 <div key={key} className='pdf-report__activities-day'>
-                  <h4>{index + 1} Dia</h4>
+                  <h4>{index + 1} Dia:</h4>
 
-                  <ul className='pdf-report__activities-list'>
+                  <div className='pdf-report__activities-day-periods'>
                     {dayKeys.map((period, index) => {
                       const activities = day[period]
 
                       return (
-                        <li key={index} className='pdf-report__activities-item'>
-                          <p>{activities}</p>
-                        </li>
-                      )
+                        <p key={index}>
+                          <strong>{getDayPeriodFromIndex(index)}</strong>
+
+                          {activities}
+                        </p>)
                     })}
-                  </ul>
+                  </div>
                 </div>
               )
             })}
           </div>
 
           <div className="pdf-report__divider" />
+
+          <div className="page-break" />
         </>
       )
     }
@@ -63,40 +66,145 @@ const PDFReport = ({ data, innerRef }) => {
     return null
   }
 
-  const renderLandMarks = () => { }
+  const renderLandMarks = () => {
+    const { landmarks } = data
+    if (!landmarks) return null
+
+    return (
+      <>
+        <div className='pdf-report__image-group'>
+          <h3>Landmarks</h3>
+
+          <div className='pdf-report__image-group-list'>
+            {landmarks.map((landmark) => {
+              return (
+                <div key={landmark} className='pdf-report__image-group-item'>
+                  <img src='https://picsum.photos/seed/picsum/200' alt={landmark} />
+
+                  <p>{landmark}</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="pdf-report__divider" />
+
+        <div className="page-break" />
+      </>
+    )
+  }
+
+  const renderRestaurants = () => {
+    const { restaurants } = data
+    if (!restaurants) return null
+
+    return (
+      <>
+        <div className='pdf-report__image-group'>
+          <h3>Restaurantes</h3>
+
+          <div className='pdf-report__image-group-list'>
+            {restaurants.map((restaurant) => {
+              return (
+                <div key={restaurant} className='pdf-report__image-group-item'>
+                  <img src='https://picsum.photos/seed/picsum/200' alt={restaurant} />
+
+                  <p>{restaurant}</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="pdf-report__divider" />
+
+        <div className="page-break" />
+      </>
+    )
+  }
+
+  const renderHotels = () => {
+    const { hotel_list } = data
+    if (!hotel_list) return null
+
+    return (
+      <>
+        <div className='pdf-report__image-group'>
+          <h3>Hoteis</h3>
+
+          <div className='pdf-report__image-group-list'>
+            {hotel_list.map((restaurant) => {
+              return (
+                <div key={restaurant} className='pdf-report__image-group-item'>
+                  <img src='https://picsum.photos/seed/picsum/200' alt={restaurant} />
+
+                  <p>{restaurant}</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="pdf-report__divider" />
+
+        <div className="page-break" />
+      </>
+    )
+  }
 
   const destination = data.destination || ''
   const date = moment().format('DD/MM/YYYY')
   return (
     <div ref={innerRef} className='pdf-report'>
-      <div className='pdf-report__header'>
-        <img
-          className='pdf-report__header-logo'
-          src="https://www.abreu.pt/images/abreu_logo.png"
-          alt="Abreu"
-        />
+      <table>
+        <thead>
+          <tr>
+            <td>
+              <div className='pdf-report__header'>
+                <img
+                  className='pdf-report__header-logo'
+                  src="https://www.abreu.pt/images/abreu_logo.png"
+                  alt="Abreu"
+                />
 
-        <h3 className='pdf-report__header-title'>
-          Relatório:
+                <h3 className='pdf-report__header-title'>
+                  Relatório:
 
-          <span>
-            {destination}
-          </span>
-        </h3>
+                  <span>
+                    {destination}
+                  </span>
+                </h3>
 
-        <p className='pdf-report__header-date'>{date}</p>
-      </div>
+                <p className='pdf-report__header-date'>{date}</p>
+              </div>
 
-      <div className="pdf-report__divider" />
+              <div className="pdf-report__divider" />
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              {renderSmallHistory()}
 
-      {renderSmallHistory()}
+              {renderActivities()}
 
-      {renderActivities()}
+              {renderLandMarks()}
+
+              {renderRestaurants()}
+
+              {renderHotels()}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   )
 }
 
 PDFReport.propTypes = {
+  isPrinting: PropTypes.bool.isRequired,
   data: PropTypes.object.isRequired,
   innerRef: PropTypes.object.isRequired
 }

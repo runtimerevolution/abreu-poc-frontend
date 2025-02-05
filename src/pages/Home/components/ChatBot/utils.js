@@ -4,6 +4,10 @@ import { v4 as uuidV4 } from "uuid"
 
 export const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
+export const randomIntFromInterval = (min, max) => { // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 export const timeOfDay = () => {
   const currentHour = moment().format('HH')
 
@@ -43,9 +47,10 @@ export const getDayPeriodFromIndex = (index) => {
 }
 
 export const generateRandomOption = (hasCity = '') => {
+
   const option = {
     id: uuidV4(),
-    image: 'https://picsum.photos/seed/picsum/200',
+    image: `https://picsum.photos/200?random=${randomIntFromInterval(1, 100)}`,
     landmarks: [
       "Museu do Prado",
       "Palácio Real de Madrid",
