@@ -1,0 +1,344 @@
+
+request { "userSession": "22", "prompt": { "origin": "protugal", "destination": "Madrid", "when": "during the 1st to the 3rd", "who": "2 adults and 1 child" } }
+[
+    {
+        "hotel_list": [
+            "Hotel Regina",
+            "Hotel Emperador",
+            "Hotel Catalonia Plaza Mayor"
+        ],
+        "surrounding_cities": [
+            "Toledo",
+            "Segóvia",
+            "Ávila"
+        ],
+        "landmarks": [
+            "Museu do Prado",
+            "Palácio Real de Madrid",
+            "Parque do Retiro",
+            "Plaza Mayor"
+        ],
+        "restaurants": [
+            "Casa Lucio",
+            "Sobrino de Botín",
+            "DiverXO"
+        ],
+        "small_history": "Madrid, a capital de Espanha, é uma cidade com uma rica história que remonta ao século IX. Tornou-se a capital do país em 1561 sob o reinado de Felipe II. A cidade é conhecida pela sua arquitetura histórica, museus de renome mundial e uma vibrante cena cultural.",
+        "activities_per_day": {
+            "1st": {
+                "morning": "Visite o Museu do Prado para admirar obras de arte de mestres como Velázquez e Goya.",
+                "afternoon": "Explore o Palácio Real de Madrid e os seus magníficos jardins.",
+                "evening": "Jante no restaurante tradicional Casa Lucio para experimentar a autêntica culinária madrilena."
+            },
+            "2nd": {
+                "morning": "Passeie pelo Parque do Retiro e desfrute de um passeio de barco no lago.",
+                "afternoon": "Visite a Plaza Mayor e aproveite para conhecer as lojas e cafés ao redor.",
+                "evening": "Delicie-se com uma refeição no histórico Sobrino de Botín, o restaurante mais antigo do mundo."
+            },
+            "3rd": {
+                "morning": "Descubra o bairro de La Latina e explore os seus mercados e ruas pitorescas.",
+                "afternoon": "Faça uma visita ao Museu Reina Sofia para ver a Guernica de Picasso.",
+                "evening": "Desfrute de uma experiência gastronómica inovadora no restaurante DiverXO."
+            }
+        }
+    }
+]
+
+request  { "userSession": "22", "prompt": { "origin": "protugal", "destination": "Spain", "when": "during the 1st to the 3rd", "who": "2 adults and 1 child" } }
+[
+    {
+        "destination": "Madrid",
+        "hotel_list": [
+            "Hotel Emperador",
+            "Hotel Regina",
+            "Hotel Mayorazgo"
+        ],
+        "surrounding_cities": [
+            "Toledo",
+            "Segóvia",
+            "Ávila"
+        ],
+        "landmarks": [
+            "Palácio Real de Madrid",
+            "Museu do Prado",
+            "Parque do Retiro"
+        ],
+        "restaurants": [
+            "Sobrino de Botín",
+            "Casa Lucio",
+            "DiverXO"
+        ],
+        "small_history": "Madrid, a capital de Espanha, é uma cidade rica em história e cultura, conhecida por seus museus de arte, arquitetura e vida noturna vibrante.",
+        "activities_per_day": {
+            "1st": {
+                "morning": [
+                    "Visitar o Palácio Real de Madrid"
+                ],
+                "afternoon": [
+                    "Passeio pelo Parque do Retiro"
+                ],
+                "evening": [
+                    "Jantar no Sobrino de Botín"
+                ]
+            },
+            "2nd": {
+                "morning": [
+                    "Explorar o Museu do Prado"
+                ],
+                "afternoon": [
+                    "Visitar a cidade de Toledo"
+                ],
+                "evening": [
+                    "Jantar na Casa Lucio"
+                ]
+            },
+            "3rd": {
+                "morning": [
+                    "Passeio por Segóvia"
+                ],
+                "afternoon": [
+                    "Visita à Ávila"
+                ],
+                "evening": [
+                    "Jantar no DiverXO"
+                ]
+            }
+        }
+    },
+    {
+        "destination": "Barcelona",
+        "hotel_list": [
+            "Hotel Arts Barcelona",
+            "Hotel 1898",
+            "Hotel W Barcelona"
+        ],
+        "surrounding_cities": [
+            "Girona",
+            "Tarragona",
+            "Lleida"
+        ],
+        "landmarks": [
+            "Sagrada Família",
+            "Parque Güell",
+            "Casa Batlló"
+        ],
+        "restaurants": [
+            "Tickets",
+            "La Boqueria",
+            "Cinc Sentits"
+        ],
+        "small_history": "Barcelona é uma cidade vibrante e cosmopolita, famosa pelas suas obras de Gaudí, praias deslumbrantes e rica herança cultural.",
+        "activities_per_day": {
+            "1st": {
+                "morning": [
+                    "Visitar a Sagrada Família"
+                ],
+                "afternoon": [
+                    "Explorar o Parque Güell"
+                ],
+                "evening": [
+                    "Jantar no Tickets"
+                ]
+            },
+            "2nd": {
+                "morning": [
+                    "Passeio pela Casa Batlló"
+                ],
+                "afternoon": [
+                    "Visitar a cidade de Girona"
+                ],
+                "evening": [
+                    "Jantar em La Boqueria"
+                ]
+            },
+            "3rd": {
+                "morning": [
+                    "Excursão a Tarragona"
+                ],
+                "afternoon": [
+                    "Passeio por Lleida"
+                ],
+                "evening": [
+                    "Jantar no Cinc Sentits"
+                ]
+            }
+        }
+    },
+    {
+        "destination": "Sevilha",
+        "hotel_list": [
+            "Hotel Alfonso XIII",
+            "Hotel Casa 1800",
+            "Hotel Colón Gran Meliá"
+        ],
+        "surrounding_cities": [
+            "Córdoba",
+            "Jerez de la Frontera",
+            "Cádiz"
+        ],
+        "landmarks": [
+            "Catedral de Sevilha",
+            "Alcáçova de Sevilha",
+            "Plaza de España"
+        ],
+        "restaurants": [
+            "El Rinconcillo",
+            "Abades Triana",
+            "Egaña-Oriza"
+        ],
+        "small_history": "Sevilha é famosa pela sua rica história mourisca, flamenco vibrante e arquitetura deslumbrante, sendo uma das cidades mais encantadoras da Espanha.",
+        "activities_per_day": {
+            "1st": {
+                "morning": [
+                    "Visitar a Catedral de Sevilha"
+                ],
+                "afternoon": [
+                    "Explorar a Alcáçova de Sevilha"
+                ],
+                "evening": [
+                    "Jantar no El Rinconcillo"
+                ]
+            },
+            "2nd": {
+                "morning": [
+                    "Passeio pela Plaza de España"
+                ],
+                "afternoon": [
+                    "Visitar a cidade de Córdoba"
+                ],
+                "evening": [
+                    "Jantar no Abades Triana"
+                ]
+            },
+            "3rd": {
+                "morning": [
+                    "Excursão a Jerez de la Frontera"
+                ],
+                "afternoon": [
+                    "Passeio por Cádiz"
+                ],
+                "evening": [
+                    "Jantar no Egaña-Oriza"
+                ]
+            }
+        }
+    },
+    {
+        "destination": "Valência",
+        "hotel_list": [
+            "Hotel Las Arenas",
+            "Hotel SH Valencia Palace",
+            "Hotel Vincci Lys"
+        ],
+        "surrounding_cities": [
+            "Alicante",
+            "Castellón",
+            "Gandia"
+        ],
+        "landmarks": [
+            "Cidade das Artes e das Ciências",
+            "Mercado Central",
+            "Catedral de Valência"
+        ],
+        "restaurants": [
+            "La Pepica",
+            "Casa Montaña",
+            "RiFF"
+        ],
+        "small_history": "Valência é conhecida pela sua cidade das artes e das ciências, praias deslumbrantes e a famosa paella, sendo um destino imperdível na costa leste da Espanha.",
+        "activities_per_day": {
+            "1st": {
+                "morning": [
+                    "Visitar a Cidade das Artes e das Ciências"
+                ],
+                "afternoon": [
+                    "Explorar o Mercado Central"
+                ],
+                "evening": [
+                    "Jantar no La Pepica"
+                ]
+            },
+            "2nd": {
+                "morning": [
+                    "Passeio pela Catedral de Valência"
+                ],
+                "afternoon": [
+                    "Visitar a cidade de Alicante"
+                ],
+                "evening": [
+                    "Jantar na Casa Montaña"
+                ]
+            },
+            "3rd": {
+                "morning": [
+                    "Excursão a Castellón"
+                ],
+                "afternoon": [
+                    "Passeio por Gandia"
+                ],
+                "evening": [
+                    "Jantar no RiFF"
+                ]
+            }
+        }
+    },
+    {
+        "destination": "Granada",
+        "hotel_list": [
+            "Hotel Alhambra Palace",
+            "Hotel Casa Morisca",
+            "Hotel NH Collection Granada Victoria"
+        ],
+        "surrounding_cities": [
+            "Málaga",
+            "Almería",
+            "Jaén"
+        ],
+        "landmarks": [
+            "Alhambra",
+            "Generalife",
+            "Catedral de Granada"
+        ],
+        "restaurants": [
+            "Restaurante Ruta del Azafrán",
+            "Bodegas Castañeda",
+            "El Trillo"
+        ],
+        "small_history": "Granada é famosa pela Alhambra, uma obra-prima de arquitetura islâmica, e pela sua rica herança multicultural, sendo um destino encantador no sul de Espanha.",
+        "activities_per_day": {
+            "1st": {
+                "morning": [
+                    "Visitar a Alhambra"
+                ],
+                "afternoon": [
+                    "Explorar o Generalife"
+                ],
+                "evening": [
+                    "Jantar no Restaurante Ruta del Azafrán"
+                ]
+            },
+            "2nd": {
+                "morning": [
+                    "Passeio pela Catedral de Granada"
+                ],
+                "afternoon": [
+                    "Visitar a cidade de Málaga"
+                ],
+                "evening": [
+                    "Jantar na Bodegas Castañeda"
+                ]
+            },
+            "3rd": {
+                "morning": [
+                    "Excursão a Almería"
+                ],
+                "afternoon": [
+                    "Passeio por Jaén"
+                ],
+                "evening": [
+                    "Jantar no El Trillo"
+                ]
+            }
+        }
+    }
+]

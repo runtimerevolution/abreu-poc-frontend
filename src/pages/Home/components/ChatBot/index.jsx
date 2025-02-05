@@ -1,77 +1,25 @@
 import { useCallback, useEffect, useState } from "react"
 import moment from 'moment'
-import PropTypes from 'prop-types';
-import { Button, Col, Container, FormControl, InputGroup, Spinner } from "react-bootstrap"
+import { v4 } from "uuid";
+import { Button, Col, Container, FormControl, InputGroup } from "react-bootstrap"
+import ChatLog from "./ChatLog";
+import ChatOptionSelection from "./ChatOptionSelection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faClose, faComment, faRobot } from "@fortawesome/free-solid-svg-icons"
 
 import './style.scss'
+import { generateBotMsg, generateRandomOption, timeOfDay } from "./utils";
 
 const PROMPT_PROPS = ['destination', 'origin', 'when', 'who']
 const initialPrompts = PROMPT_PROPS.map((key) => ({ key, value: '' }))
-
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
-
-const timeOfDay = () => {
-  const currentHour = moment().format('HH')
-
-  if (currentHour >= 3 && currentHour < 12) return 'bom dia'
-  else if (currentHour >= 12 && currentHour < 19) return 'boa tarde'
-
-  return null
-}
-
-const generateBotMsg = (nextKey) => {
-  let chatMessage = { type: 'bot', message: '', timeStamp: moment() }
-  switch (nextKey) {
-    case 'destination':
-      chatMessage.message = 'Para onde deseja viajar? (Cidade ou País)'
-      break
-    case 'when':
-      chatMessage.message = 'Quando pretende ir? (Data de ínicio e fim ou Data de ínicio e duração)'
-      break
-    case 'origin':
-      chatMessage.message = 'De onde é que vai sair ? (Cidade ou País)'
-      break
-    case 'who':
-      chatMessage.message = 'Quantas pessoas irão ?'
-      break
-  }
-  return chatMessage
-}
-
-const ChatBotMessage = ({ message, type = 'bot', timeStamp }) => {
-  const messageStyle = type === 'user' ? 'chatbot__message-user' : 'chatbot__message-bot'
-  const messageStyleId = type === 'user' ? 'tms_user' : 'tms_bot'
-  const messageAlignment = type === 'user' ? 'chatbot__message-align-right' : 'chatbot__message-align-left'
-
-  return (
-    <div className={`chatbot__message ${messageAlignment}`}>
-      <div className='chatbot__message-info'>
-        <p className={messageStyle}>{message}</p>
-        <p id={messageStyleId} className='chatbot__message-time'>{timeStamp.format('HH:mm:ss')}</p>
-      </div>
-    </div>
-  )
-}
-
-ChatBotMessage.propTypes = {
-  type: PropTypes.oneOf(['user', 'bot']),
-  message: PropTypes.object.isRequired,
-  timeStamp: PropTypes.instanceOf(moment).isRequired
-}
-
-// {
-//   destination: '',
-//     date: '',
-//       when: '',
-//         who: ''
-// }
+const sessionId = v4()
+const api_url = 'https://abreu-ai-poc-9f2880723694.herokuapp.com/'
 
 const ChatBot = () => {
   const [currentPrompt, setCurrentPrompt] = useState('destination')
   const [prompts, setPrompts] = useState(initialPrompts)
   const [chatHistory, setChatHistory] = useState([])
+  const [chatOptions, setChatOptions] = useState([])
 
   const [isThonking, setIsThonking] = useState(false)
   const [userPrompt, setUserPrompt] = useState('')
@@ -86,18 +34,36 @@ const ChatBot = () => {
         timeStamp: moment(),
       }
     ])
+    setChatOptions([
+      generateRandomOption(),
+      generateRandomOption(),
+      generateRandomOption(),
+      generateRandomOption(),
+      generateRandomOption()
+    ])
   }, [])
 
   const sendResetToAPI = useCallback(async () => {
     setIsThonking(true)
-    //const options = {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify({ userPrompt })
-    // }
-    // const response = await fetch('TO_CHANGE', options)
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_session: sessionId,
+        prompt: prompts
+      })
+    }
+    const response = await fetch(api_url, options)
+    if (response.ok) {
+      const data = response.json()
+      setChatOptions(data)
+    } else {
+      setChatHistory([...chatHistory, {
+        type: 'bot',
+        message: `Desculpe, não foi possivel gerar opções. Poderia tentar outra vez?`,
+        timeStamp: moment()
+      }])
+    }
 
     // return response.json()
     resetChatLog()
@@ -136,11 +102,6 @@ const ChatBot = () => {
     resetChatLog()
   }, [])
 
-  useEffect(() => {
-    const missingPrompts = prompts.filter(({ value }) => !value)
-    if (!missingPrompts.length) sendPromptToAPI(prompts)
-  }, [prompts, sendPromptToAPI])
-
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSendPrompt()
   }
@@ -174,10 +135,12 @@ const ChatBot = () => {
 
       <Container className="chatbot">
         <h5>
-          Quere um plano personalizado? Fale com o assistente virtual <FontAwesomeIcon icon={faRobot} />
+          Quere planear as suas férias? Fale com o assistente virtual <FontAwesomeIcon icon={faRobot} />
         </h5>
 
         <Col>
+          <ChatLog loading={isThonking} messages={reversedChatLog} />
+
           <InputGroup>
             {hasUserMessages && (
               <Button
@@ -211,32 +174,7 @@ const ChatBot = () => {
 
           <div className="chatbot__sub-divider" />
 
-          <Container className="chatbot__messages">
-            {isThonking && (
-              <div className='chatbot__message'>
-                <div className='chatbot__message-empty' />
-
-                <div className='chatbot__message-info'>
-                  <p className='chatbot__message-bot' >
-                    <FontAwesomeIcon icon={faRobot} />
-
-                    Estou a pensar...
-
-                    <Spinner className='chatbot__message-spinner' animation="border" />
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {reversedChatLog.map(({ type, message, timeStamp }, index) => (
-              <ChatBotMessage
-                key={timeStamp.format("M_D_YYYY_h_mm_ss_a") + index}
-                type={type}
-                message={message}
-                timeStamp={timeStamp}
-              />
-            ))}
-          </Container>
+          <ChatOptionSelection options={chatOptions} />
         </Col >
       </Container >
     </>
