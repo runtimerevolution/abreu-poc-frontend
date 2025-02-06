@@ -19,15 +19,22 @@ export const timeOfDay = () => {
 
 export const generateBotMsg = (nextKey) => {
   let chatMessage = { type: 'bot', message: '', timeStamp: moment() }
+
   switch (nextKey) {
+    case 'destination':
+      chatMessage.message = 'Qual o destino da viagem do cliente?'
+      break
     case 'when':
       chatMessage.message = 'Quando pretendes ir? (Exemplo: 12 de Janeiro a 15 de Janeiro)'
       break
     case 'origin':
-      chatMessage.message = 'De onde é que vais viajar ?'
+      chatMessage.message = 'De onde vai sair o seu cliente?'
       break
     case 'who':
-      chatMessage.message = 'Quantas pessoas vão ?'
+      chatMessage.message = 'Quantas pessoas são?'
+      break
+    case 'budget':
+      chatMessage.message = 'Qual o valor máximo que o cliente quer gastar?'
       break
   }
   return chatMessage

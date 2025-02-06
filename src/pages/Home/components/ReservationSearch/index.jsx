@@ -60,7 +60,7 @@ const ReservationSearch = () => {
   return (
     <Container className='mainSearch' fluid>
       <Container className='mainSearch_container'>
-        <Nav
+        {/* <Nav
           className='searchNav'
           variant='pills'
           activeKey={currentForm}
@@ -82,11 +82,11 @@ const ReservationSearch = () => {
               </NavItem>
             )
           })}
-        </Nav>
+        </Nav> */}
 
-        <Form className='searchForm'>
+        {/* <Form className='searchForm'>
           {renderForm()}
-        </Form>
+        </Form> */}
 
         <ChatBot />
       </Container>

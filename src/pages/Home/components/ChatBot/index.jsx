@@ -8,12 +8,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 // Utils
 import { generateBotMsg, parseResponseData, timeOfDay } from "./utils";
 // Assets
-import { faClose, faComment, faRobot } from "@fortawesome/free-solid-svg-icons"
+import { faClose, faComment } from "@fortawesome/free-solid-svg-icons"
 // Styles
 import './style.scss'
 import ReportSelection from "./ReportSelection";
 
-const PROMPT_PROPS = ['destination', 'origin', 'when', 'who']
+const PROMPT_PROPS = ['destination', 'origin', 'when', 'who', 'budget']
 const initialPrompts = PROMPT_PROPS.map((key) => ({ key, value: '' }))
 const api_url = 'https://abreu-ai-poc-9f2880723694.herokuapp.com'
 
@@ -35,22 +35,11 @@ const ChatBot = () => {
     setChatHistory([
       {
         type: 'bot',
-        message: `Olá, ${timeOfDay()}! Bem vindo ao assitente virtual.`,
+        message: `Olá, ${timeOfDay()}! Bem vindo ao seu assistente de viagem à medida.`,
         timeStamp: moment(),
       },
-      {
-        type: 'bot',
-        message: `Qual o destino da tua viagem ?`,
-        timeStamp: moment(),
-      }
+      generateBotMsg('destination')
     ])
-    // setChatOptions([
-    //   generateRandomOption(),
-    //   generateRandomOption(),
-    //   generateRandomOption(),
-    //   generateRandomOption(),
-    //   generateRandomOption()
-    // ])
   }, [])
 
   const sendResetToAPI = useCallback(async () => {
@@ -148,11 +137,11 @@ const ChatBot = () => {
   const hasUserMessages = chatHistory.some(({ type }) => type === 'user')
   return (
     <>
-      <div className="chatbot__divider" />
+      {/* <div className="chatbot__divider" /> */}
 
       <Container className="chatbot">
         <h5>
-          Quere planear as suas férias? Fale com o assistente virtual <FontAwesomeIcon icon={faRobot} />
+          Geração de Roteiros de viagens à medida.
         </h5>
 
         <Col>

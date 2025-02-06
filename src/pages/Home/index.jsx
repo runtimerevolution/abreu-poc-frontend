@@ -7,11 +7,11 @@ import './style.scss'
 const Home = () => {
   return (
     <>
-      <ImageCarousel />
+      {/* <ImageCarousel /> */}
 
       <ReservationSearch />
 
-      <Destaques />
+      {/* <Destaques /> */}
     </>
   )
 }
