@@ -46,11 +46,15 @@ export const getDayPeriodFromIndex = (index) => {
   }
 }
 
+export const generateRandomUrlForImg = () => {
+  return `https://picsum.photos/200?random=${randomIntFromInterval(1, 100)}`
+}
+
 export const generateRandomOption = (hasCity = '') => {
 
   const option = {
     id: uuidV4(),
-    image: `https://picsum.photos/200?random=${randomIntFromInterval(1, 100)}`,
+    image: generateRandomUrlForImg(),
     landmarks: [
       "Museu do Prado",
       "Palácio Real de Madrid",
@@ -91,4 +95,62 @@ export const generateRandomOption = (hasCity = '') => {
   if (!hasCity) option.destination = faker.location.city()
 
   return option
+}
+
+
+export const parseResponseData = (data) => {
+  if (!data) return null
+
+  if (Array.isArray(data)) {
+    const _data = data.map((item) => {
+      return {
+        ...item,
+        image: generateRandomUrlForImg(),
+        restaurants: item.restaurants.map((restaurant) => {
+          return {
+            name: restaurant,
+            image: generateRandomUrlForImg()
+          }
+        }),
+        hotel_list: item.hotel_list.map((hotel) => {
+          return {
+            name: hotel,
+            image: generateRandomUrlForImg()
+          }
+        }),
+        landmarks: item.landmarks.map((landmark) => {
+          return {
+            name: landmark,
+            image: generateRandomUrlForImg()
+          }
+        })
+      }
+    })
+
+    return _data
+  } else {
+    return [{
+      ...data,
+      image: generateRandomUrlForImg(),
+      restaurants: data.restaurants.map((restaurant) => {
+        return {
+          name: restaurant,
+          image: generateRandomUrlForImg()
+        }
+      }),
+      hotel_list: data.hotel_list.map((hotel) => {
+        return {
+          name: hotel,
+          image: generateRandomUrlForImg()
+        }
+      }),
+      landmarks: data.landmarks.map((landmark) => {
+        return {
+          name: landmark,
+          image: generateRandomUrlForImg()
+        }
+      })
+    }]
+  }
+
 }

@@ -6,7 +6,7 @@ import { Button, Col, Container, FormControl, InputGroup } from "react-bootstrap
 import ChatLog from "./ChatLog";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 // Utils
-import { generateBotMsg, generateRandomOption, timeOfDay } from "./utils";
+import { generateBotMsg, parseResponseData, timeOfDay } from "./utils";
 // Assets
 import { faClose, faComment, faRobot } from "@fortawesome/free-solid-svg-icons"
 // Styles
@@ -25,11 +25,13 @@ const ChatBot = () => {
   const [chatOptions, setChatOptions] = useState([])
 
   const [isThonking, setIsThonking] = useState(false)
+  const [isNoChat, setIsNoChat] = useState(false)
   const [userPrompt, setUserPrompt] = useState('')
 
   const resetChatLog = useCallback(() => {
     setCurrentPrompt('destination')
     setPrompts(initialPrompts)
+    setIsNoChat(false)
     setChatHistory([
       {
         type: 'bot',
@@ -42,13 +44,13 @@ const ChatBot = () => {
         timeStamp: moment(),
       }
     ])
-    setChatOptions([
-      generateRandomOption(),
-      generateRandomOption(),
-      generateRandomOption(),
-      generateRandomOption(),
-      generateRandomOption()
-    ])
+    // setChatOptions([
+    //   generateRandomOption(),
+    //   generateRandomOption(),
+    //   generateRandomOption(),
+    //   generateRandomOption(),
+    //   generateRandomOption()
+    // ])
   }, [])
 
   const sendResetToAPI = useCallback(async () => {
@@ -76,8 +78,20 @@ const ChatBot = () => {
     if (response.ok) {
       const data = await response.json()
       console.log(data)
-      if (Array.isArray(data)) setChatOptions(data)
-      else setChatOptions([data])
+      setChatOptions(parseResponseData(data))
+      setChatHistory([
+        ...updatedChatLog, {
+          type: 'bot',
+          message: `Aqui estão algumas sugestões para a tua viagem!`,
+          timeStamp: moment()
+        },
+        {
+          type: 'bot',
+          message: `Se quiseres recomeçar a conversa, clica no botão de reset(x).`,
+          timeStamp: moment()
+        }
+      ])
+      setIsNoChat(true)
     } else {
       setCurrentPrompt('destination')
       setPrompts(initialPrompts)
@@ -161,13 +175,13 @@ const ChatBot = () => {
               value={userPrompt}
               onChange={handleUserPrompt}
               placeholder="Responda aqui..."
-              disabled={isThonking}
+              disabled={isThonking || isNoChat}
               onKeyDown={handleKeyDown}
             />
 
             <Button
-              disabled={isThonking}
               className="chatbot__send-btn"
+              disabled={isThonking || isNoChat}
               variant="primary"
               onClick={handleSendPrompt}
             >

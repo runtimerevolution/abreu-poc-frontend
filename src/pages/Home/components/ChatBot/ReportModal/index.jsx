@@ -67,8 +67,8 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
         <div className='report-modal__image-group-list'>
           {landmarks.map((landmark, index) => (
             <div key={index} className='report-modal__image-group-item'>
-              <img src='https://picsum.photos/seed/picsum/200' alt={landmark} />
-              <p>{landmark}</p>
+              <img src={landmark.image} alt={landmark.name} />
+              <p>{landmark.name}</p>
             </div>
           ))}
         </div>
@@ -85,8 +85,8 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
         <div className='report-modal__image-group-list'>
           {restaurants.map((restaurant, index) => (
             <div key={index} className='report-modal__image-group-item'>
-              <img src='https://picsum.photos/seed/picsum/200' alt={restaurant} />
-              <p>{restaurant}</p>
+              <img src={restaurant.image} alt={restaurant.name} />
+              <p>{restaurant.name}</p>
             </div>
           ))}
         </div>
@@ -103,8 +103,8 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
         <div className='report-modal__image-group-list'>
           {hotels.map((hotel, index) => (
             <div key={index} className='report-modal__image-group-item'>
-              <img src='https://picsum.photos/seed/picsum/200' alt={hotel} />
-              <p>{hotel}</p>
+              <img src={hotel.image} alt={hotel.name} />
+              <p>{hotel.name}</p>
             </div>
           ))}
         </div>

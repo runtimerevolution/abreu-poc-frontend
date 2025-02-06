@@ -79,9 +79,9 @@ const PDFReport = ({ data, innerRef }) => {
             {landmarks.map((landmark) => {
               return (
                 <div key={landmark} className='pdf-report__image-group-item'>
-                  <img src='https://picsum.photos/seed/picsum/200' alt={landmark} />
+                  <img src={landmark.image} alt={landmark.name} />
 
-                  <p>{landmark}</p>
+                  <p>{landmark.name}</p>
                 </div>
               )
             })}
@@ -108,9 +108,9 @@ const PDFReport = ({ data, innerRef }) => {
             {restaurants.map((restaurant) => {
               return (
                 <div key={restaurant} className='pdf-report__image-group-item'>
-                  <img src='https://picsum.photos/seed/picsum/200' alt={restaurant} />
+                  <img src={restaurant.image} alt={restaurant.name} />
 
-                  <p>{restaurant}</p>
+                  <p>{restaurant.name}</p>
                 </div>
               )
             })}
@@ -134,12 +134,12 @@ const PDFReport = ({ data, innerRef }) => {
           <h3>Hoteis</h3>
 
           <div className='pdf-report__image-group-list'>
-            {hotel_list.map((restaurant) => {
+            {hotel_list.map((hotel) => {
               return (
-                <div key={restaurant} className='pdf-report__image-group-item'>
-                  <img src='https://picsum.photos/seed/picsum/200' alt={restaurant} />
+                <div key={hotel.name} className='pdf-report__image-group-item'>
+                  <img src={hotel.image} alt={hotel.name} />
 
-                  <p>{restaurant}</p>
+                  <p>{hotel.name}</p>
                 </div>
               )
             })}
