@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { AppContext } from "../../helpers/AppContext";
 import { useNavigate } from "react-router-dom";
@@ -12,13 +12,18 @@ const Login = () => {
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
 
-  const { setIsLoggedIn } = useContext(AppContext)
+  const isLoggedIn = sessionStorage.getItem('isloggedIn')
+
+  useEffect(() => {
+    if (isLoggedIn) navigate('/')
+  }, [isLoggedIn])
+
 
   const handleLogin = (e) => {
     e.preventDefault();
 
     if (userName === ADMIN_USER && password === ADMIN_PASSWORD) {
-      setIsLoggedIn(true)
+      sessionStorage.setItem('isloggedIn', true)
       navigate('/')
     }
   }

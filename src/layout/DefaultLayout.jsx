@@ -1,7 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom"
-import { Container, Navbar } from "react-bootstrap"
-import { useContext, useEffect } from "react"
-import { AppContext } from "../helpers/AppContext"
+import { Button, Container, Navbar } from "react-bootstrap"
+import { useEffect } from "react"
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 // import { faPhone } from "@fortawesome/free-solid-svg-icons"
 // import HoverDropdownMenu from "./components/HoverDropdownMenu"
@@ -13,7 +12,7 @@ import './style.scss'
 
 export default function DefaultLayout() {
   const navigate = useNavigate()
-  const { isloggedIn } = useContext(AppContext)
+  const isLogin = sessionStorage.getItem('isloggedIn')
 
   // const renderNavigationItems = () => {
   //   return NavigationItems.map(item => {
@@ -58,25 +57,33 @@ export default function DefaultLayout() {
   // }
 
   useEffect(() => {
-    if (!isloggedIn) {
-      navigate('/login')
-    }
-  }, [isloggedIn, navigate])
+    if (!isLogin) navigate('/login')
+  }, [isLogin, navigate])
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('isloggedIn')
+    navigate('/login')
+  }
 
   return (
     <>
-      <Navbar expand="lg" variant="light" bg="light" fixed="top" sticky="top" as='header'>
-        <Container>
-          <Navbar.Brand className="default-layout_nav-brand" href="/">
-            <img src="https://www.abreu.pt/images/abreu_logo.png" alt="Abreu" width="170px" />
-          </Navbar.Brand>
-          <Navbar.Collapse>
-            <h3 className="default-layout_h3">
-              Agente de Geração de Roteiros.
-            </h3>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+      {isLogin && (
+        <Navbar expand="lg" variant="light" bg="light" fixed="top" sticky="top" as='header'>
+          <Container>
+            <Navbar.Brand className="default-layout_nav-brand" href="/">
+              <img src="https://www.abreu.pt/images/abreu_logo.png" alt="Abreu" width="170px" />
+            </Navbar.Brand>
+            <Navbar.Collapse>
+              <h3 className="default-layout_h3">
+                Agente de Geração de Roteiros.
+              </h3>
+            </Navbar.Collapse>
+            <Button onClick={handleLogout} variant="primary">
+              Log out
+            </Button>
+          </Container>
+        </Navbar>
+      )}
 
       <Outlet />
     </>
