@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
-import { AppContext } from "../../helpers/AppContext";
 import { useNavigate } from "react-router-dom";
 
 const ADMIN_USER = import.meta.env.VITE_ADMIN_USER
@@ -15,8 +14,8 @@ const Login = () => {
   const isLoggedIn = sessionStorage.getItem('isloggedIn')
 
   useEffect(() => {
-    if (isLoggedIn) navigate('/')
-  }, [isLoggedIn])
+    if (isLoggedIn) navigate('/home')
+  }, [isLoggedIn, navigate])
 
 
   const handleLogin = (e) => {
@@ -24,7 +23,7 @@ const Login = () => {
 
     if (userName === ADMIN_USER && password === ADMIN_PASSWORD) {
       sessionStorage.setItem('isloggedIn', true)
-      navigate('/')
+      navigate('/home')
     }
   }
 

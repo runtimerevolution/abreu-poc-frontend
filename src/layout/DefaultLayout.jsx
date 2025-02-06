@@ -57,12 +57,12 @@ export default function DefaultLayout() {
   // }
 
   useEffect(() => {
-    if (!isLogin) navigate('/login')
+    if (!isLogin) navigate('/')
   }, [isLogin, navigate])
 
   const handleLogout = () => {
     sessionStorage.removeItem('isloggedIn')
-    navigate('/login')
+    navigate('/')
   }
 
   return (
