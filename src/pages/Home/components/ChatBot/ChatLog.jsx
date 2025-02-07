@@ -26,6 +26,14 @@ const ChatLogLoader = () => {
   )
 }
 
+const ChatLoading = () => {
+  return (
+    <div className='chatbot__messages-backdrop'>
+      <Spinner className='chatbot__messages-backdrop_spinner' animation="border" />
+    </div>
+  )
+}
+
 const ChatBotMessage = ({ message, type = 'bot', timeStamp }) => {
   const messageStyle = type === 'user' ? 'chatbot__message-user' : 'chatbot__message-bot'
   const messageStyleId = type === 'user' ? 'tms_user' : 'tms_bot'
@@ -48,10 +56,12 @@ ChatBotMessage.propTypes = {
 }
 
 
-const ChatLog = ({ messages, loading = false }) => {
+const ChatLog = ({ messages, isUpdating = false, isRequesting = false }) => {
   return (
     <Container className="chatbot__messages">
-      {loading && <ChatLogLoader />}
+      {isUpdating && <ChatLoading />}
+
+      {isRequesting && <ChatLogLoader />}
 
       {messages.map(({ type, message, timeStamp }, index) => {
         const keyID = timeStamp.format("M_D_YYYY_h_mm_ss_a") + index
@@ -70,7 +80,8 @@ const ChatLog = ({ messages, loading = false }) => {
 }
 
 ChatLog.propTypes = {
-  loading: PropTypes.bool,
+  isUpdating: PropTypes.bool,
+  isRequesting: PropTypes.bool,
   messages: PropTypes.arrayOf(PropTypes.shape({
     type: PropTypes.oneOf(['user', 'bot']),
     message: PropTypes.string.isRequired,

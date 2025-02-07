@@ -7,6 +7,49 @@
     margin-bottom: 12px;
   }
 
+  & h5 {
+    font-weight: bold;
+    color: #2653a3;
+    margin-bottom: 12px;
+  }
+
+  & table {
+    width: 100%;
+
+    & tr {
+      border-bottom: 4px solid #54667A;
+      border-radius: 5px;
+    }
+  }
+
+  & #footer-spacer {
+    height: 1.6cm;
+  }
+
+  & #footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: #2653a3;
+
+    padding: 0.5cm;
+    height: 1.6cm;
+
+    color: white;
+    text-align: center;
+  }
+
+  &__table-row-no-border {
+    border-bottom: none !important;
+  }
+
+  &__right-border {
+    border-right: 2px solid #54667A;
+  }
+
+
   &__header {
     display: flex;
     flex-direction: row;
@@ -40,11 +83,8 @@
   }
 
   &__divider {
-    border: 2px solid #54667A;
-    border-radius: 5px;
-
-    margin-top: 12px;
-    margin-bottom: 12px;
+    border: 1px solid #54667A;
+    margin: 12px 8px;
   }
 
   &__text {
@@ -53,9 +93,21 @@
     margin-bottom: 0px;
   }
 
+  &__price {
+    color: #2653a3;
+    margin-bottom: 0px;
+    padding-left: 8px;
+
+    & strong {
+      margin-left: 5px;
+      color: #54667A;
+    }
+  }
+
   &__activities {
     display: flex;
     flex-direction: column;
+    padding: 8px;
 
     & h3 {
       font-size: 24px;
@@ -71,13 +123,20 @@
       margin-bottom: 0px;
     }
 
+    &-row {
+      border-bottom: none !important;
+
+      & tr {
+        page-break-inside: avoid !important;
+      }
+    }
+
     &-day {
       margin-top: 12px;
       background-color: #f5f5f5;
       border: 1px solid #54667A;
       border-radius: 5px;
       padding: 8px;
-
 
       &-periods {
         display: flex;
@@ -97,33 +156,45 @@
   }
 
   &__image-group {
-    display: flex;
-    flex-direction: column;
-
-    page-break-inside: avoid !important;
-
     &-list {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
+      page-break-before: always;
+
+      & tr {
+        page-break-inside: avoid !important;
+      }
     }
 
     &-item {
+      display: flex;
+      flex-direction: row;
       margin: 2px 4px;
       background-color: #f5f5f5;
-      min-width: 100px;
-      max-width: 200px;
+
+      & h5 {
+        margin-bottom: 0px;
+      }
 
       & p {
         font-size: 16px;
         color: #54667A;
         padding: 8px;
         margin-bottom: 0px;
-      }
-    }
 
-    @media print {
-      display: block;
+        & strong {
+          margin-left: 5px;
+          font-weight: bold;
+          color: #2653a3;
+        }
+      }
+
+      &-img {
+        max-width: 150px;
+        max-height: 150px;
+      }
+
+      &-info {
+        margin-left: 5px;
+      }
     }
   }
 

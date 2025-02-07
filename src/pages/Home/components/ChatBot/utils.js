@@ -36,6 +36,29 @@ export const generateBotMsg = (nextKey) => {
     case 'budget':
       chatMessage.message = 'Qual o valor máximo que o cliente quer gastar?'
       break
+    case 'free_form': {
+      chatMessage.message = 'O que é que o cliente deseja?'
+      break
+    }
+    case 'opening': {
+      chatMessage.message = `Olá, ${timeOfDay()}! Bem vindo ao seu assistente de viagem à medida.`
+      break
+    }
+    case 'reset': {
+      chatMessage.message = 'Se quiserer recomeçar a conversa, clica no botão de reset (x).'
+      break
+    }
+    case 'request_error': {
+      chatMessage.message = 'Desculpa, não foi possivel gerar relatórios. Tenta outra vez!'
+      break
+    }
+    case 'request_success': {
+      chatMessage.message = 'Desculpa, não foi possivel gerar relatórios. Tenta outra vez!'
+      break
+    }
+    case 'generate_options': {
+      chatMessage.message = 'Geradas algumas sugestões de viagens verifique em baixo!'
+    }
   }
   return chatMessage
 }
@@ -57,27 +80,36 @@ export const generateRandomUrlForImg = () => {
   return `https://picsum.photos/200?random=${randomIntFromInterval(1, 100)}`
 }
 
+export const generateRandomPriceString = (min = 500, max = 1000) => {
+  const price = randomIntFromInterval(min, max)
+  return new Intl.NumberFormat('de-DE').format(price)
+}
+
 export const generateRandomOption = (hasCity = '') => {
 
   const option = {
     id: uuidV4(),
     image: generateRandomUrlForImg(),
     landmarks: [
-      "Museu do Prado",
-      "Palácio Real de Madrid",
-      "Parque do Retiro",
-      "Plaza Mayor"
+      { image: generateRandomUrlForImg(), name: "Museu do Prado" },
+      { image: generateRandomUrlForImg(), name: "Palácio Real de Madrid" },
+      { image: generateRandomUrlForImg(), name: "Parque do Retiro" },
+      { image: generateRandomUrlForImg(), name: "Plaza Mayor" }
     ],
     restaurants: [
-      "Casa Lucio",
-      "Sobrino de Botín",
-      "DiverXO"
+      { image: generateRandomUrlForImg(), name: "Casa Lucio" },
+      { image: generateRandomUrlForImg(), name: "Sobrino de Botín" },
+      { image: generateRandomUrlForImg(), name: "DiverXO" }
     ],
     hotel_list: [
-      "Hotel Regina",
-      "Hotel Emperador",
-      "Hotel Catalonia Plaza Mayor"
+      { image: generateRandomUrlForImg(), name: "Hotel Regina" },
+      { image: generateRandomUrlForImg(), name: "Hotel Emperador" },
+      { image: generateRandomUrlForImg(), name: "Hotel Catalonia Plaza Mayor" }
     ],
+    price: "1800 EUR",
+    average_temp: "30°C",
+    departure_from_origin: "Voo AM3, 10 de Julho, 14:00, 11 horas de viagem",
+    departure_from_destination: " Voo AM4, 15 de Julho, 19:00, 11 horas de viagem",
     short_description: "Cidade vibrante com rica história e cultura em Espanha.",
     small_history: "Madrid, a capital de Espanha, é uma cidade com uma rica história que remonta ao século IX. Tornou-se a capital do país em 1561 sob o reinado de Felipe II. A cidade é conhecida pela sua arquitetura histórica, museus de renome mundial e uma vibrante cena cultural.",
     activities_per_day: {
@@ -92,6 +124,21 @@ export const generateRandomOption = (hasCity = '') => {
         evening: "Delicie-se com uma refeição no histórico Sobrino de Botín, o restaurante mais antigo do mundo."
       },
       "3rd": {
+        morning: "Descubra o bairro de La Latina e explore os seus mercados e ruas pitorescas.",
+        afternoon: "Faça uma visita ao Museu Reina Sofia para ver a Guernica de Picasso.",
+        evening: "Desfrute de uma experiência gastronómica inovadora no restaurante DiverXO."
+      },
+      "2rd": {
+        morning: "Descubra o bairro de La Latina e explore os seus mercados e ruas pitorescas.",
+        afternoon: "Faça uma visita ao Museu Reina Sofia para ver a Guernica de Picasso.",
+        evening: "Desfrute de uma experiência gastronómica inovadora no restaurante DiverXO."
+      },
+      "4rd": {
+        morning: "Descubra o bairro de La Latina e explore os seus mercados e ruas pitorescas.",
+        afternoon: "Faça uma visita ao Museu Reina Sofia para ver a Guernica de Picasso.",
+        evening: "Desfrute de uma experiência gastronómica inovadora no restaurante DiverXO."
+      },
+      "5rd": {
         morning: "Descubra o bairro de La Latina e explore os seus mercados e ruas pitorescas.",
         afternoon: "Faça uma visita ao Museu Reina Sofia para ver a Guernica de Picasso.",
         evening: "Desfrute de uma experiência gastronómica inovadora no restaurante DiverXO."

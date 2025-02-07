@@ -12,13 +12,11 @@ import './style.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTemperature0 } from '@fortawesome/free-solid-svg-icons';
 
-
-
 const ReportModal = ({ data, open = false, onClose = () => { } }) => {
   const [selectedTab, setSelectedTab] = useState('landmarks')
 
   const pdfRef = useRef(null)
-  const reactToPrintFn = useReactToPrint({ contentRef: pdfRef })
+  const reactToPrintFn = useReactToPrint({ contentRef: pdfRef, preserveAfterPrint: true })
   const handlePrint = () => reactToPrintFn()
 
   if (!data) return null
@@ -36,7 +34,7 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
 
           return (
             <div key={key} className='report-modal__activities-day'>
-              <h4>{index + 1} Dia:</h4>
+              <h4>Dia {index + 1}:</h4>
 
               <div className='report-modal__activities-day-periods'>
                 {dayKeys.map((period, index) => {
@@ -147,6 +145,16 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
 
             <strong>
               {data.average_temp}
+            </strong>
+          </p>
+        )}
+
+        {!!data.price && (
+          <p className='report-modal__text'>
+            Preço Estimado:
+
+            <strong>
+              {data.price} €
             </strong>
           </p>
         )}

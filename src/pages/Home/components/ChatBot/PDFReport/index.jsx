@@ -1,23 +1,76 @@
 import PropTypes from 'prop-types';
 import moment from 'moment';
 // Components
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // Assets
+import { faTemperature0 } from '@fortawesome/free-solid-svg-icons';
 //Styles
 import './style.scss'
 import { getDayPeriodFromIndex } from '../utils';
+import { faker } from '@faker-js/faker';
 
 const PDFReport = ({ data, innerRef }) => {
   if (!data) return null
 
-  const renderSmallHistory = () => {
-    if (!data.small_history) return null
+  const renderHistoryAndPrice = () => {
+    const priceText = data.price ? `${data.price}` : 'Preço não disponível'
 
     return (
-      <>
-        <p className='pdf-report__text' > {data.small_history}</p >
+      <tr>
+        <td className='pdf-report__right-border'>
+          <p className='pdf-report__text' > {data.small_history || 'Sem Historia'}</p >
 
-        <div className="pdf-report__divider" />
-      </>
+          <div className='pdf-report__divider' />
+
+          {!!data.average_temp && (
+            <p className='report-modal__text'>
+              <FontAwesomeIcon icon={faTemperature0} />
+
+              Temperatura Média:
+
+              <strong>
+                {data.average_temp}
+              </strong>
+            </p>
+          )}
+        </td>
+        <td width='30%'>
+          <p className='pdf-report__price'>
+            Preço Total Estimado:
+
+            <strong>
+              {priceText}
+            </strong>
+          </p>
+        </td>
+      </tr>
+    )
+  }
+
+  const renderVoos = () => {
+    const { arrival, departure } = data
+
+    return (
+      <tr>
+        <td className='pdf-report__right-border' width='50%'>
+          <div>
+            <h5>Voos de Ida:</h5>
+
+            <p className='pdf-report__text'>
+              {arrival}
+            </p>
+          </div>
+        </td>
+        <td width='50%'>
+          <div>
+            <h5>Voos de Volta:</h5>
+
+            <p className='pdf-report__text'>
+              {departure}
+            </p>
+          </div>
+        </td>
+      </tr>
     )
   }
 
@@ -28,37 +81,52 @@ const PDFReport = ({ data, innerRef }) => {
     if (typeof _activities === 'object') {
       return (
         <>
-          <div className='pdf-report__activities'>
-            <h3>Atividades</h3>
+          <tr className='pdf-report__activities-row'>
+            <td colSpan='2'>
+              <table>
+                <thead>
+                  <tr className='pdf-report__table-row-no-border'>
+                    <th colSpan='2'>
+                      <div className='pdf-report__activities'>
+                        <h3>Atividades:</h3>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mainKeys.map((key, index) => {
+                    const day = _activities[key]
+                    const dayKeys = Object.keys(day)
 
-            {mainKeys.map((key, index) => {
-              const day = _activities[key]
-              const dayKeys = Object.keys(day)
+                    const rowStyle = index + 1 !== mainKeys.length ? 'pdf-report__table-row-no-border' : ''
 
-              return (
-                <div key={key} className='pdf-report__activities-day'>
-                  <h4>{index + 1} Dia:</h4>
+                    return (
+                      <tr className={rowStyle} key={key}>
+                        <td colSpan='2'>
+                          <div key={key} className='pdf-report__activities-day'>
+                            <h4>{index + 1} Dia:</h4>
 
-                  <div className='pdf-report__activities-day-periods'>
-                    {dayKeys.map((period, index) => {
-                      const activities = day[period]
+                            <div className='pdf-report__activities-day-periods'>
+                              {dayKeys.map((period, index) => {
+                                const activities = day[period]
 
-                      return (
-                        <p key={index}>
-                          <strong>{getDayPeriodFromIndex(index)}</strong>
+                                return (
+                                  <p key={index}>
+                                    <strong>{getDayPeriodFromIndex(index)}</strong>
 
-                          {activities}
-                        </p>)
-                    })}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          <div className="pdf-report__divider" />
-
-          <div className="page-break" />
+                                    {activities}
+                                  </p>)
+                              })}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </td>
+          </tr>
         </>
       )
     }
@@ -71,27 +139,51 @@ const PDFReport = ({ data, innerRef }) => {
     if (!landmarks) return null
 
     return (
-      <>
-        <div className='pdf-report__image-group'>
-          <h3>Landmarks</h3>
+      <tr className='pdf-report__table-row-no-border'>
+        <td colSpan='2'>
+          <table className='pdf-report__image-group-list'>
+            <thead>
+              <tr className='pdf-report__table-row-no-border'>
+                <th colSpan='2'>
+                  <h3>Pontos de Interesse</h3>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                landmarks.map((landmark, index) => {
+                  const rowStyle = landmarks.length - 1 !== index ? 'pdf-report__table-row-no-border' : ''
 
-          <div className='pdf-report__image-group-list'>
-            {landmarks.map((landmark) => {
-              return (
-                <div key={landmark} className='pdf-report__image-group-item'>
-                  <img src={landmark.image} alt={landmark.name} />
+                  return (
+                    <tr key={landmark} className={rowStyle}>
+                      <td colSpan='2'>
+                        <div key={landmark} className='pdf-report__image-group-item'>
+                          <img className='pdf-report__image-group-item-img' src={landmark.image} alt={landmark.name} />
 
-                  <p>{landmark.name}</p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
+                          <div className='pdf-report__image-group-item-info'>
+                            <h5>{landmark.name}</h5>
 
-        <div className="pdf-report__divider" />
+                            <p>{faker.lorem.lines(4)}</p>
 
-        <div className="page-break" />
-      </>
+                            <p>
+                              Estimated Price:
+
+                              <strong>
+                                {faker.finance.amount({ min: 20, max: 200, symbol: '€' })}
+                              </strong>
+                            </p>
+                          </div>
+
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
+              }
+            </tbody>
+          </table>
+        </td>
+      </tr>
     )
   }
 
@@ -100,27 +192,61 @@ const PDFReport = ({ data, innerRef }) => {
     if (!restaurants) return null
 
     return (
-      <>
-        <div className='pdf-report__image-group'>
-          <h3>Restaurantes</h3>
+      <tr className='pdf-report__table-row-no-border'>
+        <td colSpan='2'>
+          <table className='pdf-report__image-group-list'>
+            <thead>
+              <tr className='pdf-report__table-row-no-border'>
+                <th colSpan='2'>
+                  <h3>Restaurantes</h3>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                restaurants.map((restaurant, index) => {
+                  const rowStyle = restaurants.length - 1 !== index ? 'pdf-report__table-row-no-border' : ''
 
-          <div className='pdf-report__image-group-list'>
-            {restaurants.map((restaurant) => {
-              return (
-                <div key={restaurant} className='pdf-report__image-group-item'>
-                  <img src={restaurant.image} alt={restaurant.name} />
+                  return (
+                    <tr key={restaurant} className={rowStyle}>
+                      <td colSpan='2'>
+                        <div className='pdf-report__image-group-item'>
+                          <img
+                            className='pdf-report__image-group-item-img'
+                            src={restaurant.image}
+                            alt={restaurant.name}
+                          />
 
-                  <p>{restaurant.name}</p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
+                          <div className='pdf-report__image-group-item-info'>
+                            <h5>{restaurant.name}</h5>
 
-        <div className="pdf-report__divider" />
+                            <p>{faker.lorem.lines(2)}</p>
 
-        <div className="page-break" />
-      </>
+                            <p>
+                              Price Range:
+
+                              <strong>
+                                {faker.finance.amount({ min: 20, max: 30, symbol: '€' })}
+                              </strong>
+
+                              -
+
+                              <strong>
+                                {faker.finance.amount({ min: 30, max: 80, symbol: '€' })}
+                              </strong>
+                            </p>
+                          </div>
+
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
+              }
+            </tbody>
+          </table>
+        </td>
+      </tr>
     )
   }
 
@@ -129,27 +255,51 @@ const PDFReport = ({ data, innerRef }) => {
     if (!hotel_list) return null
 
     return (
-      <>
-        <div className='pdf-report__image-group'>
-          <h3>Hoteis</h3>
+      <tr className='pdf-report__table-row-no-border'>
+        <td colSpan='2'>
+          <table className='pdf-report__image-group-list'>
+            <thead>
+              <tr className='pdf-report__table-row-no-border'>
+                <th colSpan='2'>
+                  <h3>Hoteis</h3>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                hotel_list.map((hotel, index) => {
+                  const rowStyle = hotel_list.length - 1 !== index ? 'pdf-report__table-row-no-border' : ''
 
-          <div className='pdf-report__image-group-list'>
-            {hotel_list.map((hotel) => {
-              return (
-                <div key={hotel.name} className='pdf-report__image-group-item'>
-                  <img src={hotel.image} alt={hotel.name} />
+                  return (
+                    <tr key={hotel} className={rowStyle}>
+                      <td colSpan='2'>
+                        <div className='pdf-report__image-group-item'>
+                          <img className='pdf-report__image-group-item-img' src={hotel.image} alt={hotel.name} />
 
-                  <p>{hotel.name}</p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
+                          <div className='pdf-report__image-group-item-info'>
+                            <h5>{hotel.name}</h5>
 
-        <div className="pdf-report__divider" />
+                            <p>{faker.lorem.lines(2)}</p>
 
-        <div className="page-break" />
-      </>
+                            <p>
+                              Estimated Price:
+
+                              <strong>
+                                {faker.finance.amount({ min: 120, max: 300, symbol: '€' })}
+                              </strong>
+                            </p>
+                          </div>
+
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
+              }
+            </tbody>
+          </table>
+        </td>
+      </tr>
     )
   }
 
@@ -160,7 +310,7 @@ const PDFReport = ({ data, innerRef }) => {
       <table>
         <thead>
           <tr>
-            <td>
+            <th colSpan='2'>
               <div className='pdf-report__header'>
                 <img
                   className='pdf-report__header-logo'
@@ -176,29 +326,37 @@ const PDFReport = ({ data, innerRef }) => {
                   </span>
                 </h3>
 
-                <p className='pdf-report__header-date'>{date}</p>
+                <p className='pdf-report__header-date'>
+                  Data de Geração: {date}
+                </p>
               </div>
-
-              <div className="pdf-report__divider" />
-            </td>
+            </th>
           </tr>
         </thead>
+
         <tbody>
-          <tr>
-            <td>
-              {renderSmallHistory()}
+          {renderHistoryAndPrice()}
 
-              {renderActivities()}
+          {renderVoos()}
 
-              {renderLandMarks()}
+          {renderActivities()}
 
-              {renderRestaurants()}
+          {renderLandMarks()}
 
-              {renderHotels()}
-            </td>
-          </tr>
+          {renderRestaurants()}
+
+          {renderHotels()}
         </tbody>
+        <tfoot>
+          <tr className='pdf-report__table-row-no-border'>
+            <td id='footer-spacer' colSpan='2' />
+          </tr>
+        </tfoot>
       </table>
+
+      <div id='footer'>
+        This is a report generated by the Abreu Chatbot
+      </div>
     </div>
   )
 }

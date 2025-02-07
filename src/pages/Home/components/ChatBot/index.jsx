@@ -2,16 +2,16 @@ import { useCallback, useEffect, useState } from "react"
 import moment from 'moment'
 import { v4 } from "uuid";
 // Components
-import { Button, Col, Container, FormControl, InputGroup } from "react-bootstrap"
-import ChatLog from "./ChatLog";
+import { Button, Col, Container, FormCheck, FormControl, InputGroup } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import ChatLog from "./ChatLog";
+import ReportSelection from "./ReportSelection";
 // Utils
-import { generateBotMsg, parseResponseData, timeOfDay } from "./utils";
+import { generateBotMsg, generateRandomOption, parseResponseData } from "./utils";
 // Assets
 import { faClose, faComment } from "@fortawesome/free-solid-svg-icons"
 // Styles
 import './style.scss'
-import ReportSelection from "./ReportSelection";
 
 const PROMPT_PROPS = ['destination', 'origin', 'when', 'who', 'budget']
 const initialPrompts = PROMPT_PROPS.map((key) => ({ key, value: '' }))
@@ -19,28 +19,31 @@ const api_url = 'https://abreu-ai-poc-9f2880723694.herokuapp.com'
 
 const ChatBot = () => {
   const [currentPrompt, setCurrentPrompt] = useState('destination')
+  // API Info
+  const [isThonking, setIsThonking] = useState(false)
   const [sessionID, setSessionID] = useState(v4())
   const [prompts, setPrompts] = useState(initialPrompts)
+  // Chat box State
+  const [isNoChat, setIsNoChat] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [userPrompt, setUserPrompt] = useState('')
   const [chatHistory, setChatHistory] = useState([])
   const [chatOptions, setChatOptions] = useState([])
-
-  const [isThonking, setIsThonking] = useState(false)
-  const [isNoChat, setIsNoChat] = useState(false)
-  const [userPrompt, setUserPrompt] = useState('')
+  const [chatFreely, setChatFreely] = useState(false)
 
   const resetChatLog = useCallback(() => {
+    setIsUpdating(true)
     setCurrentPrompt('destination')
     setPrompts(initialPrompts)
     setIsNoChat(false)
-    setChatHistory([
-      {
-        type: 'bot',
-        message: `Olá, ${timeOfDay()}! Bem vindo ao seu assistente de viagem à medida.`,
-        timeStamp: moment(),
-      },
-      generateBotMsg('destination')
-    ])
-  }, [])
+
+    if (chatFreely) {
+      setChatHistory([generateBotMsg('opening'), generateBotMsg('free_form')])
+    } else {
+      setChatHistory([generateBotMsg('opening'), generateBotMsg('destination')])
+    }
+    setIsUpdating(false)
+  }, [chatFreely])
 
   const sendResetToAPI = useCallback(async () => {
     setIsThonking(true)
@@ -68,34 +71,12 @@ const ChatBot = () => {
       const data = await response.json()
       console.log(data)
       setChatOptions(parseResponseData(data))
-      setChatHistory([
-        ...updatedChatLog, {
-          type: 'bot',
-          message: `Aqui estão algumas sugestões para a tua viagem!`,
-          timeStamp: moment()
-        },
-        {
-          type: 'bot',
-          message: `Se quiseres recomeçar a conversa, clica no botão de reset(x).`,
-          timeStamp: moment()
-        }
-      ])
+      setChatHistory([...updatedChatLog, generateBotMsg('generate_options'), generateBotMsg('reset')])
       setIsNoChat(true)
     } else {
       setCurrentPrompt('destination')
       setPrompts(initialPrompts)
-      setChatHistory([
-        ...updatedChatLog, {
-          type: 'bot',
-          message: `Desculpa, não foi possivel gerar relatórios. Tenta outra vez!`,
-          timeStamp: moment()
-        },
-        {
-          type: 'bot',
-          message: `Qual o destino da tua viagem ?`,
-          timeStamp: moment(),
-        }
-      ])
+      setChatHistory([...updatedChatLog, generateBotMsg('request_error'), generateBotMsg('destination')])
     }
 
     // const response = await fetch('TO_CHANGE', options)
@@ -108,11 +89,16 @@ const ChatBot = () => {
     setSessionID(v4())
   }, [])
 
+  useEffect(() => {
+    resetChatLog()
+  }, [chatFreely])
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSendPrompt()
   }
   const handleUserPrompt = (e) => setUserPrompt(e.target.value)
   const handleResetChat = () => sendResetToAPI()
+  const handleChangeToFree = (e) => setChatFreely(e.target.checked)
 
   const handleSendPrompt = useCallback(async () => {
     if (!userPrompt) return
@@ -136,54 +122,58 @@ const ChatBot = () => {
   const reversedChatLog = chatHistory.toReversed();
   const hasUserMessages = chatHistory.some(({ type }) => type === 'user')
   return (
-    <>
-      {/* <div className="chatbot__divider" /> */}
+    <Container className="chatbot">
+      <h5>
+        Geração de Roteiros de viagens à medida.
+      </h5>
 
-      <Container className="chatbot">
-        <h5>
-          Geração de Roteiros de viagens à medida.
-        </h5>
+      <Col>
+        <ChatLog isUpdating={isUpdating} isRequesting={isThonking} messages={reversedChatLog} />
 
-        <Col>
-          <ChatLog loading={isThonking} messages={reversedChatLog} />
+        <InputGroup>
+          <FormCheck
+            className="chatbot__switch"
+            type="switch"
+            id="custom-switch"
+            label="Livre"
+            onChange={handleChangeToFree}
+          />
 
-          <InputGroup>
-            {hasUserMessages && (
-              <Button
-                disabled={isThonking}
-                className="chatbot__send-btn"
-                variant="primary"
-                onClick={handleResetChat}
-              >
-                <FontAwesomeIcon icon={faClose} />
-              </Button>
-            )}
-
-            <FormControl
-              id='user_prompt'
-              value={userPrompt}
-              onChange={handleUserPrompt}
-              placeholder="Responda aqui..."
-              disabled={isThonking || isNoChat}
-              onKeyDown={handleKeyDown}
-            />
-
+          {hasUserMessages && (
             <Button
+              disabled={isThonking}
               className="chatbot__send-btn"
-              disabled={isThonking || isNoChat}
               variant="primary"
-              onClick={handleSendPrompt}
+              onClick={handleResetChat}
             >
-              <FontAwesomeIcon icon={faComment} />
+              <FontAwesomeIcon icon={faClose} />
             </Button>
-          </InputGroup>
+          )}
 
-          <div className="chatbot__sub-divider" />
+          <FormControl
+            id='user_prompt'
+            value={userPrompt}
+            onChange={handleUserPrompt}
+            placeholder="Responda aqui..."
+            disabled={isThonking || isNoChat}
+            onKeyDown={handleKeyDown}
+          />
 
-          <ReportSelection options={chatOptions} />
-        </Col >
-      </Container >
-    </>
+          <Button
+            className="chatbot__send-btn"
+            disabled={isThonking || isNoChat}
+            variant="primary"
+            onClick={handleSendPrompt}
+          >
+            <FontAwesomeIcon icon={faComment} />
+          </Button>
+        </InputGroup>
+
+        <div className="chatbot__sub-divider" />
+
+        <ReportSelection options={chatOptions} />
+      </Col >
+    </Container >
   )
 }
 
