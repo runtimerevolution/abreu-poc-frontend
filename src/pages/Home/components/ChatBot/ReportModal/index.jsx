@@ -10,7 +10,37 @@ import { getDayPeriodFromIndex } from '../utils';
 //Styles
 import './style.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTemperature0 } from '@fortawesome/free-solid-svg-icons';
+import { faPlaneArrival, faPlaneDeparture, faTemperature0 } from '@fortawesome/free-solid-svg-icons';
+import moment from 'moment';
+
+const FlightTraject = ({ flight }) => {
+  const [, time, duration] = flight.split(',')
+
+  const [durationHour, durationMinutes] = duration.split('h')
+  const endTime = moment(time, 'HH:mm').add(durationHour, 'hours').add(durationMinutes, 'minutes').format('HH:mm')
+
+  return (
+    <div className='report-modal__flight' key={flight}>
+      <p>{time}</p>
+
+      <div className='report-modal__flight-traject' >
+        <div className='report-modal__flight-visual' >
+          <FontAwesomeIcon icon={faPlaneDeparture} />
+          <div className='report-modal__flight-visual-line' />
+          <FontAwesomeIcon icon={faPlaneArrival} />
+        </div>
+
+        <p>{durationHour}h{durationMinutes}m</p>
+      </div>
+
+      <p>{endTime}</p>
+    </div>
+  )
+}
+
+FlightTraject.propTypes = {
+  flight: PropTypes.string.isRequired
+}
 
 const ReportModal = ({ data, open = false, onClose = () => { } }) => {
   const [selectedTab, setSelectedTab] = useState('landmarks')
@@ -110,6 +140,40 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
     )
   }
 
+  const renderFlights = () => {
+    const dataDeIda = data.departures_from_origin ? data.departures_from_origin[0].split(',')[0] : 'N/A'
+    const dataDeVolta = data.departures_from_destination ? data.departures_from_destination[0].split(',')[0] : 'N/A'
+
+
+    return (
+      <div className='report-modal__flights'>
+        <div className='report-modal__flights-going'>
+          <h5>
+            <strong>Ida:</strong>
+
+            {dataDeIda}
+          </h5>
+
+          <div className='report-modal__flights-list'>
+            {data.departures_from_origin?.map((flight) => <FlightTraject key={flight} flight={flight} />)}
+          </div>
+        </div>
+
+        <div className='report-modal__flights-return'>
+          <h5>
+            <strong>Volta:</strong>
+
+            {dataDeVolta}
+          </h5>
+
+          <div className='report-modal__flights-list'>
+            {data.departures_from_destination?.map((flight) => <FlightTraject key={flight} flight={flight} />)}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const renderSelectedTab = () => {
     switch (selectedTab) {
       case 'activities':
@@ -120,6 +184,8 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
         return renderRestaurants()
       case 'hotel_list':
         return renderHotels()
+      case 'flights':
+        return renderFlights()
       default:
         return null
     }
@@ -133,35 +199,44 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
       </Modal.Header>
 
       <Modal.Body>
-        <p className='report-modal__text'>
-          {data.small_history}
-        </p>
+        <div className='report-modal__info'>
+          <div className='report-modal__info-geral'>
+            <p className='report-modal__text'>
+              {data.small_history}
+            </p>
 
-        {!!data.average_temp && (
-          <p className='report-modal__text'>
-            <FontAwesomeIcon icon={faTemperature0} />
+            <p className='report-modal__text'>
+              <FontAwesomeIcon icon={faTemperature0} />
 
-            Temperatura Média:
+              Temperatura Média:
 
-            <strong>
-              {data.average_temp}
-            </strong>
-          </p>
-        )}
+              <strong>
+                {data.average_temp ? data.average_temp : 'N/A'}
+              </strong>
+            </p>
+          </div>
 
-        {!!data.price && (
-          <p className='report-modal__text'>
-            Preço Estimado:
+          <div className='report-modal__info-choices'>
+            <p className='report-modal__text'>
+              Pessoas: <strong>{data.family_size || 'N/A'}</strong>
+            </p>
 
-            <strong>
-              {data.price} €
-            </strong>
-          </p>
-        )}
+            <p className='report-modal__text'>
+              Origem: <strong>{data.origin || 'N/A'}</strong>
+            </p>
+
+            <p className='report-modal__text'>
+              Preço Total Estimado: <strong>{data.price || 'N/A'}</strong>
+            </p>
+          </div>
+        </div>
 
         <div className='report-modal__divider' />
 
         <Nav variant='tabs' activeKey={selectedTab} onSelect={(sk) => setSelectedTab(sk)}>
+          <Nav.Item>
+            <Nav.Link eventKey='flights'>Voos Disponíveis</Nav.Link>
+          </Nav.Item>
           <Nav.Item>
             <Nav.Link eventKey='landmarks'>Pontos de Interesse</Nav.Link>
           </Nav.Item>

@@ -37,7 +37,7 @@ export const generateBotMsg = (nextKey) => {
       chatMessage.message = 'Qual o valor máximo que o cliente quer gastar?'
       break
     case 'free_form': {
-      chatMessage.message = 'O que é que o cliente deseja?'
+      chatMessage.message = 'Em que é que o posso ajudar?'
       break
     }
     case 'opening': {
@@ -49,10 +49,6 @@ export const generateBotMsg = (nextKey) => {
       break
     }
     case 'request_error': {
-      chatMessage.message = 'Desculpa, não foi possivel gerar relatórios. Tenta outra vez!'
-      break
-    }
-    case 'request_success': {
       chatMessage.message = 'Desculpa, não foi possivel gerar relatórios. Tenta outra vez!'
       break
     }
@@ -108,8 +104,20 @@ export const generateRandomOption = (hasCity = '') => {
     ],
     price: "1800 EUR",
     average_temp: "30°C",
-    departure_from_origin: "Voo AM3, 10 de Julho, 14:00, 11 horas de viagem",
-    departure_from_destination: " Voo AM4, 15 de Julho, 19:00, 11 horas de viagem",
+    family_size: "2 adultos e uma criança",
+    origin: "Portugal",
+    start_date: "10/08/2025",
+    end_date: "10/08/2025",
+    departures_from_origin: [
+      "10 de julho, 08:00, 2h30",
+      "10 de julho, 12:00, 2h30",
+      "10 de julho, 18:00, 2h30"
+    ],
+    departures_from_destination: [
+      "15 de julho, 09:00, 2h30",
+      "15 de julho, 13:00, 2h30",
+      "15 de julho, 17:00, 2h30"
+    ],
     short_description: "Cidade vibrante com rica história e cultura em Espanha.",
     small_history: "Madrid, a capital de Espanha, é uma cidade com uma rica história que remonta ao século IX. Tornou-se a capital do país em 1561 sob o reinado de Felipe II. A cidade é conhecida pela sua arquitetura histórica, museus de renome mundial e uma vibrante cena cultural.",
     activities_per_day: {

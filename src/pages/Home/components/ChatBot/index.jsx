@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useState } from "react"
 import moment from 'moment'
 import { v4 } from "uuid";
 // Components
-import { Button, Col, Container, FormCheck, FormControl, InputGroup } from "react-bootstrap"
+import { Button, Col, Container, FormControl, InputGroup, Nav } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import ChatLog from "./ChatLog";
 import ReportSelection from "./ReportSelection";
@@ -29,28 +30,7 @@ const ChatBot = () => {
   const [userPrompt, setUserPrompt] = useState('')
   const [chatHistory, setChatHistory] = useState([])
   const [chatOptions, setChatOptions] = useState([])
-  const [chatFreely, setChatFreely] = useState(false)
-
-  const resetChatLog = useCallback(() => {
-    setIsUpdating(true)
-    setCurrentPrompt('destination')
-    setPrompts(initialPrompts)
-    setIsNoChat(false)
-
-    if (chatFreely) {
-      setChatHistory([generateBotMsg('opening'), generateBotMsg('free_form')])
-    } else {
-      setChatHistory([generateBotMsg('opening'), generateBotMsg('destination')])
-    }
-    setIsUpdating(false)
-  }, [chatFreely])
-
-  const sendResetToAPI = useCallback(async () => {
-    setIsThonking(true)
-    // return response.json()
-    resetChatLog()
-    setIsThonking(false)
-  }, [resetChatLog])
+  const [chatType, setChatType] = useState('structured')
 
   const sendPromptToAPI = useCallback(async (_prompts, updatedChatLog) => {
     setIsThonking(true)
@@ -84,6 +64,31 @@ const ChatBot = () => {
     // return response.json()
   }, [sessionID])
 
+  const resetChatLog = useCallback(async () => {
+    setIsUpdating(true)
+    setCurrentPrompt('destination')
+    setPrompts(initialPrompts)
+    setIsNoChat(false)
+
+    setChatOptions([generateRandomOption()])
+
+    switch (chatType) {
+      case 'free_form': {
+        setChatHistory([generateBotMsg('opening'), generateBotMsg('free_form')])
+        break
+      }
+      case 'surprise': {
+        setChatHistory([generateBotMsg('opening')])
+        break
+      }
+      case 'structured':
+      default:
+        setChatHistory([generateBotMsg('opening'), generateBotMsg('destination')])
+        break
+    }
+    setIsUpdating(false)
+  }, [chatType])
+
   useEffect(() => {
     resetChatLog()
     setSessionID(v4())
@@ -91,14 +96,13 @@ const ChatBot = () => {
 
   useEffect(() => {
     resetChatLog()
-  }, [chatFreely])
+  }, [chatType])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSendPrompt()
   }
   const handleUserPrompt = (e) => setUserPrompt(e.target.value)
-  const handleResetChat = () => sendResetToAPI()
-  const handleChangeToFree = (e) => setChatFreely(e.target.checked)
+  const handleResetChat = () => resetChatLog()
 
   const handleSendPrompt = useCallback(async () => {
     if (!userPrompt) return
@@ -117,7 +121,7 @@ const ChatBot = () => {
     setChatHistory(updatedChatLog)
 
     if (!missingPrompts.length) await sendPromptToAPI(_prompts, updatedChatLog)
-  }, [userPrompt, prompts, currentPrompt, chatHistory, sendPromptToAPI])
+  }, [userPrompt, prompts, currentPrompt, chatHistory, chatType, sendPromptToAPI])
 
   const reversedChatLog = chatHistory.toReversed();
   const hasUserMessages = chatHistory.some(({ type }) => type === 'user')
@@ -128,17 +132,21 @@ const ChatBot = () => {
       </h5>
 
       <Col>
+        <Nav className="chatbot__tabs" variant='tabs' activeKey={chatType} onSelect={(sk) => setChatType(sk)}>
+          <Nav.Item>
+            <Nav.Link eventKey='structured'>Estruturado</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey='surprise'>Suprende-me!</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey='free_form'>Conversa Livre</Nav.Link>
+          </Nav.Item>
+        </Nav>
+
         <ChatLog isUpdating={isUpdating} isRequesting={isThonking} messages={reversedChatLog} />
 
         <InputGroup>
-          <FormCheck
-            className="chatbot__switch"
-            type="switch"
-            id="custom-switch"
-            label="Livre"
-            onChange={handleChangeToFree}
-          />
-
           {hasUserMessages && (
             <Button
               disabled={isThonking}

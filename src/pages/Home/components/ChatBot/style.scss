@@ -40,7 +40,9 @@
     height: 400px;
     overflow-y: scroll;
 
-    border-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+
     margin: 0px 12px;
     background-color: #ffff;
     width: unset;
@@ -143,10 +145,15 @@
     }
   }
 
-  &__switch {
-    margin: 8px;
+  &__tabs {
+    margin: 0px 12px;
 
-    & label {
+    & .nav-item {
+      flex-grow: 1;
+    }
+
+    & a {
+      text-align: center;
       color: #ffff;
     }
   }

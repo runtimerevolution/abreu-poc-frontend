@@ -104,6 +104,13 @@
     }
   }
 
+  &__flights {
+    padding: 8px;
+    &-list {
+      padding: 8px;
+    }
+  }
+
   &__activities {
     display: flex;
     flex-direction: column;

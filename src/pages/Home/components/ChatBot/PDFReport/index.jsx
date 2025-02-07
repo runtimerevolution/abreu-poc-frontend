@@ -3,11 +3,40 @@ import moment from 'moment';
 // Components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // Assets
-import { faTemperature0 } from '@fortawesome/free-solid-svg-icons';
+import { faPlaneArrival, faPlaneDeparture, faTemperature0 } from '@fortawesome/free-solid-svg-icons';
+// Utils
+import { getDayPeriodFromIndex } from '../utils';
 //Styles
 import './style.scss'
-import { getDayPeriodFromIndex } from '../utils';
-import { faker } from '@faker-js/faker';
+
+const FlightTraject = ({ flight }) => {
+  const [, time, duration] = flight.split(',')
+
+  const [durationHour, durationMinutes] = duration.split('h')
+  const endTime = moment(time, 'HH:mm').add(durationHour, 'hours').add(durationMinutes, 'minutes').format('HH:mm')
+
+  return (
+    <div className='report-modal__flight' key={flight}>
+      <p>{time}</p>
+
+      <div className='report-modal__flight-traject' >
+        <div className='report-modal__flight-visual' >
+          <FontAwesomeIcon icon={faPlaneDeparture} />
+          <div className='report-modal__flight-visual-line' />
+          <FontAwesomeIcon icon={faPlaneArrival} />
+        </div>
+
+        <p>{durationHour}h{durationMinutes}m</p>
+      </div>
+
+      <p>{endTime}</p>
+    </div>
+  )
+}
+
+FlightTraject.propTypes = {
+  flight: PropTypes.string.isRequired
+}
 
 const PDFReport = ({ data, innerRef }) => {
   if (!data) return null
@@ -19,8 +48,6 @@ const PDFReport = ({ data, innerRef }) => {
       <tr>
         <td className='pdf-report__right-border'>
           <p className='pdf-report__text' > {data.small_history || 'Sem Historia'}</p >
-
-          <div className='pdf-report__divider' />
 
           {!!data.average_temp && (
             <p className='report-modal__text'>
@@ -36,6 +63,14 @@ const PDFReport = ({ data, innerRef }) => {
         </td>
         <td width='30%'>
           <p className='pdf-report__price'>
+            Pessoas: <strong>{data.family_size || 'N/A'}</strong>
+          </p>
+
+          <p className='pdf-report__price'>
+            Origem: <strong>{data.origin || 'N/A'}</strong>
+          </p>
+
+          <p className='pdf-report__price'>
             Preço Total Estimado:
 
             <strong>
@@ -48,26 +83,29 @@ const PDFReport = ({ data, innerRef }) => {
   }
 
   const renderVoos = () => {
-    const { arrival, departure } = data
+    const { departures_from_origin, departures_from_destination } = data
+
+    const dataDeIda = data.departures_from_origin ? data.departures_from_origin[0].split(',')[0] : 'N/A'
+    const dataDeVolta = data.departures_from_destination ? data.departures_from_destination[0].split(',')[0] : 'N/A'
 
     return (
       <tr>
         <td className='pdf-report__right-border' width='50%'>
-          <div>
-            <h5>Voos de Ida:</h5>
+          <div className='pdf-report__flights'>
+            <h5><strong>Voos de Ida:</strong> {dataDeIda}</h5>
 
-            <p className='pdf-report__text'>
-              {arrival}
-            </p>
+            <div className='pdf-report__flights-list'>
+              {departures_from_origin?.map((flight) => <FlightTraject key={flight} flight={flight} />)}
+            </div>
           </div>
         </td>
         <td width='50%'>
-          <div>
-            <h5>Voos de Volta:</h5>
+          <div className='pdf-report__flights'>
+            <h5><strong>Voos de Volta:</strong> {dataDeVolta}</h5>
 
-            <p className='pdf-report__text'>
-              {departure}
-            </p>
+            <div className='pdf-report__flights-list'>
+              {departures_from_destination?.map((flight) => <FlightTraject key={flight} flight={flight} />)}
+            </div>
           </div>
         </td>
       </tr>
@@ -163,17 +201,8 @@ const PDFReport = ({ data, innerRef }) => {
                           <div className='pdf-report__image-group-item-info'>
                             <h5>{landmark.name}</h5>
 
-                            <p>{faker.lorem.lines(4)}</p>
-
-                            <p>
-                              Estimated Price:
-
-                              <strong>
-                                {faker.finance.amount({ min: 20, max: 200, symbol: '€' })}
-                              </strong>
-                            </p>
+                            <p>--</p>
                           </div>
-
                         </div>
                       </td>
                     </tr>
@@ -220,23 +249,8 @@ const PDFReport = ({ data, innerRef }) => {
                           <div className='pdf-report__image-group-item-info'>
                             <h5>{restaurant.name}</h5>
 
-                            <p>{faker.lorem.lines(2)}</p>
-
-                            <p>
-                              Price Range:
-
-                              <strong>
-                                {faker.finance.amount({ min: 20, max: 30, symbol: '€' })}
-                              </strong>
-
-                              -
-
-                              <strong>
-                                {faker.finance.amount({ min: 30, max: 80, symbol: '€' })}
-                              </strong>
-                            </p>
+                            <p>--</p>
                           </div>
-
                         </div>
                       </td>
                     </tr>
@@ -279,17 +293,8 @@ const PDFReport = ({ data, innerRef }) => {
                           <div className='pdf-report__image-group-item-info'>
                             <h5>{hotel.name}</h5>
 
-                            <p>{faker.lorem.lines(2)}</p>
-
-                            <p>
-                              Estimated Price:
-
-                              <strong>
-                                {faker.finance.amount({ min: 120, max: 300, symbol: '€' })}
-                              </strong>
-                            </p>
+                            <p>--</p>
                           </div>
-
                         </div>
                       </td>
                     </tr>
