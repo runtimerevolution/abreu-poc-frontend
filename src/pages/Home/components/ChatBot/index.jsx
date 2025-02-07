@@ -8,31 +8,55 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import ChatLog from "./ChatLog";
 import ReportSelection from "./ReportSelection";
 // Utils
-import { generateBotMsg, generateRandomOption, parseResponseData } from "./utils";
+import {
+  DEFAULT_PROMPT_KEYS,
+  generateOfflineBotMsg,
+  generatePrompts,
+  generateRandomOption,
+  INITIAL_PROMPTS,
+  parseResponseData
+} from "./utils";
 // Assets
 import { faClose, faComment } from "@fortawesome/free-solid-svg-icons"
 // Styles
 import './style.scss'
 
-const PROMPT_PROPS = ['destination', 'origin', 'when', 'who', 'budget']
-const initialPrompts = PROMPT_PROPS.map((key) => ({ key, value: '' }))
 const api_url = 'https://abreu-ai-poc-9f2880723694.herokuapp.com'
 
 const ChatBot = () => {
-  const [currentPrompt, setCurrentPrompt] = useState('destination')
   // API Info
   const [isThonking, setIsThonking] = useState(false)
   const [sessionID, setSessionID] = useState(v4())
-  const [prompts, setPrompts] = useState(initialPrompts)
+  const [promptKeys, setPromptKeys] = useState([])
+  const [prompts, setPrompts] = useState([])
+  const [reports, setReports] = useState([])
   // Chat box State
   const [isNoChat, setIsNoChat] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const [userPrompt, setUserPrompt] = useState('')
   const [chatHistory, setChatHistory] = useState([])
-  const [chatOptions, setChatOptions] = useState([])
+
   const [chatType, setChatType] = useState('structured')
 
-  const sendPromptToAPI = useCallback(async (_prompts, updatedChatLog) => {
+  const askAPIforPrompts = useCallback(async () => {
+    let generatedChatMsg = null
+
+    const options = { method: 'GET' }
+    const response = await fetch(`${api_url}/questions`, options)
+    if (response.ok) {
+      const aiPrompts = await response.json()
+      const aiPromptKeys = aiPrompts.map(({ key }) => key)
+      const generatedPrompts = generatePrompts(aiPrompts)
+      setPrompts(generatedPrompts)
+      setPromptKeys(aiPromptKeys)
+
+      generatedChatMsg = generateAutoBotMsg(aiPromptKeys[0], generatedPrompts)
+    } else { generatedChatMsg = generateOfflineBotMsg('prompts_error') }
+
+    return generatedChatMsg
+  }, [])
+
+  const sendPromptsToAPI = useCallback(async (_prompts, updatedChatLog) => {
     setIsThonking(true)
 
     const promptObject = {}
@@ -50,53 +74,77 @@ const ChatBot = () => {
     if (response.ok) {
       const data = await response.json()
       console.log(data)
-      setChatOptions(parseResponseData(data))
-      setChatHistory([...updatedChatLog, generateBotMsg('generate_options'), generateBotMsg('reset')])
+      setReports(parseResponseData(data))
+      setChatHistory([...updatedChatLog, generateOfflineBotMsg('generate_options'), generateOfflineBotMsg('reset')])
       setIsNoChat(true)
     } else {
-      setCurrentPrompt('destination')
-      setPrompts(initialPrompts)
-      setChatHistory([...updatedChatLog, generateBotMsg('request_error'), generateBotMsg('destination')])
+      setPromptKeys(DEFAULT_PROMPT_KEYS)
+      setPrompts(INITIAL_PROMPTS)
+      setChatHistory(
+        [
+          ...updatedChatLog,
+          generateOfflineBotMsg('request_error'),
+          generateAutoBotMsg(DEFAULT_PROMPT_KEYS[0], INITIAL_PROMPTS)
+        ])
     }
 
-    // const response = await fetch('TO_CHANGE', options)
     setIsThonking(false)
-    // return response.json()
   }, [sessionID])
 
   const resetChatLog = useCallback(async () => {
+    const uuid = v4()
+    console.log('resetChatLog sessionID', uuid)
+    setSessionID(uuid)
     setIsUpdating(true)
-    setCurrentPrompt('destination')
-    setPrompts(initialPrompts)
     setIsNoChat(false)
 
-    setChatOptions([generateRandomOption()])
+    const startingChatLog = [generateOfflineBotMsg('opening')]
 
     switch (chatType) {
       case 'free_form': {
-        setChatHistory([generateBotMsg('opening'), generateBotMsg('free_form')])
+        setPromptKeys([])
+        startingChatLog.push(generateOfflineBotMsg('free_form'))
         break
       }
       case 'surprise': {
-        setChatHistory([generateBotMsg('opening')])
+        const firstChatMessage = await askAPIforPrompts()
+        startingChatLog.push(firstChatMessage)
         break
       }
       case 'structured':
-      default:
-        setChatHistory([generateBotMsg('opening'), generateBotMsg('destination')])
+      default: {
+        setPromptKeys(DEFAULT_PROMPT_KEYS)
+        setPrompts(INITIAL_PROMPTS)
+        startingChatLog.push(generateAutoBotMsg(DEFAULT_PROMPT_KEYS[0], INITIAL_PROMPTS))
         break
+      }
     }
+
+    setChatHistory(startingChatLog)
+    setReports([])
     setIsUpdating(false)
   }, [chatType])
 
   useEffect(() => {
     resetChatLog()
-    setSessionID(v4())
   }, [])
 
   useEffect(() => {
     resetChatLog()
   }, [chatType])
+
+  // =================== UTILS =================================================
+  const generateAutoBotMsg = useCallback((key, initialPrompts = null) => {
+    const _prompts = initialPrompts ? initialPrompts : prompts
+    console.log('generateAutoBotMsg prompts', _prompts)
+    const keyPrompt = _prompts.find((p) => p.key === key)
+    console.log('generateAutoBotMsg keyPrompt', keyPrompt)
+    if (keyPrompt) return { type: 'bot', message: keyPrompt.question, timeStamp: moment(), finished: false }
+
+    return { type: 'bot', message: `UNKNOWN KEY RECEIVE ${key}`, timeStamp: moment() }
+  }, [prompts])
+
+  // =================== HANDLERS ===============================================
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSendPrompt()
@@ -106,22 +154,31 @@ const ChatBot = () => {
 
   const handleSendPrompt = useCallback(async () => {
     if (!userPrompt) return
-    const updatedChatLog = [...chatHistory, { type: 'user', message: userPrompt, timeStamp: moment() }]
-    const _prompts = prompts.map((p) => p.key === currentPrompt ? { key: p.key, value: userPrompt } : p)
 
-    setPrompts(_prompts)
-    setUserPrompt('')
+    if (['structured', 'surprise'].includes(chatType)) {
+      let currentKey = promptKeys[0]
 
-    const missingPrompts = _prompts.filter(({ value }) => !value)
-    if (missingPrompts.length) {
-      const nextKey = missingPrompts[0].key
-      setCurrentPrompt(nextKey)
-      updatedChatLog.push(generateBotMsg(nextKey))
+      const updatedChatLog = [...chatHistory, { type: 'user', message: userPrompt, timeStamp: moment() }]
+      const updatedPrompts = prompts.map((p) => p.key === currentKey ? { ...p, key: p.key, value: userPrompt } : p)
+
+      const missingPrompts = promptKeys.filter((v) => v !== currentKey)
+      currentKey = missingPrompts[0]
+
+      if (missingPrompts.length > 0) {
+        const msg = generateAutoBotMsg(currentKey)
+        updatedChatLog.push(msg)
+      }
+
+      setPrompts(updatedPrompts)
+      setPromptKeys(missingPrompts)
+      setChatHistory(updatedChatLog)
+
+      if (!missingPrompts.length && updatedPrompts.every(p => p.value)) {
+        await sendPromptsToAPI(updatedPrompts, updatedChatLog)
+      }
     }
-    setChatHistory(updatedChatLog)
-
-    if (!missingPrompts.length) await sendPromptToAPI(_prompts, updatedChatLog)
-  }, [userPrompt, prompts, currentPrompt, chatHistory, chatType, sendPromptToAPI])
+    setUserPrompt('')
+  }, [userPrompt, prompts, chatHistory, chatType, sendPromptsToAPI])
 
   const reversedChatLog = chatHistory.toReversed();
   const hasUserMessages = chatHistory.some(({ type }) => type === 'user')
@@ -149,7 +206,6 @@ const ChatBot = () => {
         <InputGroup>
           {hasUserMessages && (
             <Button
-              disabled={isThonking}
               className="chatbot__send-btn"
               variant="primary"
               onClick={handleResetChat}
@@ -179,7 +235,7 @@ const ChatBot = () => {
 
         <div className="chatbot__sub-divider" />
 
-        <ReportSelection options={chatOptions} />
+        <ReportSelection options={reports} />
       </Col >
     </Container >
   )

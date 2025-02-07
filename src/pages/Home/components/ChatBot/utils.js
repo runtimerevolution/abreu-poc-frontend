@@ -2,6 +2,8 @@ import moment from "moment"
 import { faker } from "@faker-js/faker"
 import { v4 as uuidV4 } from "uuid"
 
+export const DEFAULT_PROMPT_KEYS = ['destination', 'origin', 'when', 'who', 'budget']
+
 export const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 export const randomIntFromInterval = (min, max) => { // min and max included
@@ -17,25 +19,37 @@ export const timeOfDay = () => {
   return null
 }
 
-export const generateBotMsg = (nextKey) => {
+export const getPKeyQuestion = (key) => {
+  switch (key) {
+    case 'destination':
+      return 'Qual o destino da viagem do cliente?'
+    case 'when':
+      return 'Quando pretendes ir? (Exemplo: 12 de Janeiro a 15 de Janeiro)'
+    case 'origin':
+      return 'De onde vai sair o seu cliente?'
+    case 'who':
+      return 'Quantas pessoas são?'
+    case 'budget':
+      return 'Qual o valor máximo que o cliente quer gastar?'
+    default:
+      return ''
+  }
+}
+export const INITIAL_PROMPTS = DEFAULT_PROMPT_KEYS.map((key) => ({ key, question: getPKeyQuestion(key), value: '' }))
+
+export const generatePrompts = (aiPrompts = null) => {
+  if (aiPrompts?.length > 0) {
+    return aiPrompts.map((p) => ({ ...p, value: '' }))
+  }
+
+  return INITIAL_PROMPTS
+}
+
+
+export const generateOfflineBotMsg = (nextKey) => {
   let chatMessage = { type: 'bot', message: '', timeStamp: moment() }
 
   switch (nextKey) {
-    case 'destination':
-      chatMessage.message = 'Qual o destino da viagem do cliente?'
-      break
-    case 'when':
-      chatMessage.message = 'Quando pretendes ir? (Exemplo: 12 de Janeiro a 15 de Janeiro)'
-      break
-    case 'origin':
-      chatMessage.message = 'De onde vai sair o seu cliente?'
-      break
-    case 'who':
-      chatMessage.message = 'Quantas pessoas são?'
-      break
-    case 'budget':
-      chatMessage.message = 'Qual o valor máximo que o cliente quer gastar?'
-      break
     case 'free_form': {
       chatMessage.message = 'Em que é que o posso ajudar?'
       break
@@ -50,6 +64,10 @@ export const generateBotMsg = (nextKey) => {
     }
     case 'request_error': {
       chatMessage.message = 'Desculpa, não foi possivel gerar relatórios. Tenta outra vez!'
+      break
+    }
+    case 'prompts_error': {
+      chatMessage.message = 'Alguma coisa correu mal. Tenta outra vez carregando no botão de reset (x) ou então mais tarde!'
       break
     }
     case 'generate_options': {

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import moment from 'moment'
 // Components
-import { Container, Spinner } from 'react-bootstrap';
+import { Button, Container, Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // Assets
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
@@ -34,7 +34,7 @@ const ChatLoading = () => {
   )
 }
 
-const ChatBotMessage = ({ message, type = 'bot', timeStamp }) => {
+const ChatBotMessage = ({ message, type = 'bot', timeStamp, hasReport = false, onGetReports = () => { } }) => {
   const messageStyle = type === 'user' ? 'chatbot__message-user' : 'chatbot__message-bot'
   const messageStyleId = type === 'user' ? 'tms_user' : 'tms_bot'
   const messageAlignment = type === 'user' ? 'chatbot__message-align-right' : 'chatbot__message-align-left'
@@ -42,7 +42,15 @@ const ChatBotMessage = ({ message, type = 'bot', timeStamp }) => {
   return (
     <div className={`chatbot__message ${messageAlignment}`}>
       <div className='chatbot__message-info'>
-        <p className={messageStyle}>{message}</p>
+        <div className={messageStyle}>
+          <p>{message}</p>
+
+          {hasReport && (
+            <Button className='chatbot__message-btn' variant='primary' onClick={onGetReports}>
+              Gerar Relatório
+            </Button>
+          )}
+        </div>
         <p id={messageStyleId} className='chatbot__message-time'>{timeStamp.format('HH:mm:ss')}</p>
       </div>
     </div>
@@ -51,19 +59,21 @@ const ChatBotMessage = ({ message, type = 'bot', timeStamp }) => {
 
 ChatBotMessage.propTypes = {
   type: PropTypes.oneOf(['user', 'bot']),
+  hasReport: PropTypes.bool,
   message: PropTypes.object.isRequired,
-  timeStamp: PropTypes.instanceOf(moment).isRequired
+  timeStamp: PropTypes.instanceOf(moment).isRequired,
+  onGetReports: PropTypes.func
 }
 
 
-const ChatLog = ({ messages, isUpdating = false, isRequesting = false }) => {
+const ChatLog = ({ messages, isUpdating = false, isRequesting = false, onGenerateReport }) => {
   return (
     <Container className="chatbot__messages">
       {isUpdating && <ChatLoading />}
 
       {isRequesting && <ChatLogLoader />}
 
-      {messages.map(({ type, message, timeStamp }, index) => {
+      {messages.map(({ type, message, timeStamp, finished, data }, index) => {
         const keyID = timeStamp.format("M_D_YYYY_h_mm_ss_a") + index
 
         return (
@@ -72,6 +82,8 @@ const ChatLog = ({ messages, isUpdating = false, isRequesting = false }) => {
             type={type}
             message={message}
             timeStamp={timeStamp}
+            hasReport={finished}
+            onGetReports={() => onGenerateReport(data)}
           />
         )
       })}
@@ -85,8 +97,11 @@ ChatLog.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.shape({
     type: PropTypes.oneOf(['user', 'bot']),
     message: PropTypes.string.isRequired,
-    timeStamp: PropTypes.instanceOf(moment).isRequired
-  })).isRequired
+    timeStamp: PropTypes.instanceOf(moment).isRequired,
+    has_report: PropTypes.bool,
+    data: PropTypes.object
+  })).isRequired,
+  onGenerateReport: PropTypes.func.isRequired
 }
 
 export default ChatLog
