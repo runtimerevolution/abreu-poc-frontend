@@ -83,7 +83,7 @@ const ChatLog = ({ messages, isUpdating = false, isRequesting = false, onGenerat
             message={message}
             timeStamp={timeStamp}
             hasReport={finished}
-            onGetReports={() => onGenerateReport(data)}
+            onGetReports={() => onGenerateReport(message)}
           />
         )
       })}

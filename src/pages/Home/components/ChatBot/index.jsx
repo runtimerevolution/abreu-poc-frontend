@@ -14,6 +14,7 @@ import {
   generatePrompts,
   generateRandomOption,
   INITIAL_PROMPTS,
+  parseFreeResponseData,
   parseResponseData
 } from "./utils";
 // Assets
@@ -59,17 +60,22 @@ const ChatBot = () => {
   const sendPromptsToAPI = useCallback(async (_prompts, updatedChatLog) => {
     setIsThonking(true)
 
-    const promptObject = {}
-    _prompts.forEach(({ key, value }) => promptObject[key] = value)
-
     const options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    }
+
+    if (typeof _prompts === 'string') {
+      options.body = JSON.stringify({ user_session: sessionID, message: _prompts })
+    } else {
+      const promptObject = {}
+      _prompts.forEach(({ key, value }) => promptObject[key] = value)
+      options.body = JSON.stringify({
         user_session: sessionID,
         prompt: promptObject
       })
     }
+
     const response = await fetch(`${api_url}/prompt`, options)
     if (response.ok) {
       const data = await response.json()
@@ -89,6 +95,31 @@ const ChatBot = () => {
     }
 
     setIsThonking(false)
+  }, [sessionID])
+
+  const sendFreeChatToAPI = useCallback(async (message) => {
+    setIsThonking(true)
+
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_session: sessionID,
+        message
+      })
+    }
+
+    let msg = null
+    const response = await fetch(`${api_url}/free_chat`, options)
+    if (response.ok) {
+      const data = await response.json()
+      msg = parseFreeResponseData(data)
+    } else {
+      msg = generateOfflineBotMsg('request_error')
+    }
+
+    setIsThonking(false)
+    return msg
   }, [sessionID])
 
   const resetChatLog = useCallback(async () => {
@@ -136,9 +167,7 @@ const ChatBot = () => {
   // =================== UTILS =================================================
   const generateAutoBotMsg = useCallback((key, initialPrompts = null) => {
     const _prompts = initialPrompts ? initialPrompts : prompts
-    console.log('generateAutoBotMsg prompts', _prompts)
     const keyPrompt = _prompts.find((p) => p.key === key)
-    console.log('generateAutoBotMsg keyPrompt', keyPrompt)
     if (keyPrompt) return { type: 'bot', message: keyPrompt.question, timeStamp: moment(), finished: false }
 
     return { type: 'bot', message: `UNKNOWN KEY RECEIVE ${key}`, timeStamp: moment() }
@@ -152,13 +181,17 @@ const ChatBot = () => {
   const handleUserPrompt = (e) => setUserPrompt(e.target.value)
   const handleResetChat = () => resetChatLog()
 
+  const handleRequestReport = async (message) => {
+    await sendPromptsToAPI(message, chatHistory)
+  }
+
   const handleSendPrompt = useCallback(async () => {
     if (!userPrompt) return
 
+    const updatedChatLog = [...chatHistory, { type: 'user', message: userPrompt, timeStamp: moment() }]
     if (['structured', 'surprise'].includes(chatType)) {
       let currentKey = promptKeys[0]
 
-      const updatedChatLog = [...chatHistory, { type: 'user', message: userPrompt, timeStamp: moment() }]
       const updatedPrompts = prompts.map((p) => p.key === currentKey ? { ...p, key: p.key, value: userPrompt } : p)
 
       const missingPrompts = promptKeys.filter((v) => v !== currentKey)
@@ -171,12 +204,15 @@ const ChatBot = () => {
 
       setPrompts(updatedPrompts)
       setPromptKeys(missingPrompts)
-      setChatHistory(updatedChatLog)
 
       if (!missingPrompts.length && updatedPrompts.every(p => p.value)) {
         await sendPromptsToAPI(updatedPrompts, updatedChatLog)
       }
+    } else {
+      const msg = await sendFreeChatToAPI(userPrompt)
+      updatedChatLog.push(msg)
     }
+    setChatHistory(updatedChatLog)
     setUserPrompt('')
   }, [userPrompt, prompts, chatHistory, chatType, sendPromptsToAPI])
 
@@ -201,7 +237,12 @@ const ChatBot = () => {
           </Nav.Item>
         </Nav>
 
-        <ChatLog isUpdating={isUpdating} isRequesting={isThonking} messages={reversedChatLog} />
+        <ChatLog
+          isUpdating={isUpdating}
+          isRequesting={isThonking}
+          messages={reversedChatLog}
+          onGenerateReport={handleRequestReport}
+        />
 
         <InputGroup>
           {hasUserMessages && (

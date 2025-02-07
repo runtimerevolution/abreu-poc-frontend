@@ -234,3 +234,14 @@ export const parseResponseData = (data) => {
   }
 
 }
+
+export const parseFreeResponseData = (data) => {
+  if (!data) return generateOfflineBotMsg('request_error')
+
+  return {
+    type: 'bot',
+    message: data.message,
+    timeStamp: moment(),
+    has_report: data.finished
+  }
+}
