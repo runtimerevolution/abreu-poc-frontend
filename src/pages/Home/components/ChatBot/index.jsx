@@ -22,7 +22,7 @@ import { faClose, faComment } from "@fortawesome/free-solid-svg-icons"
 // Styles
 import './style.scss'
 
-const api_url = 'https://abreu-ai-poc-9f2880723694.herokuapp.com'
+const api_url = 'https://abreu-poc-backend.onrender.com'
 
 const ChatBot = () => {
   // API Info
