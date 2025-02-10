@@ -8,7 +8,19 @@ import { faRobot } from '@fortawesome/free-solid-svg-icons';
 //Styles
 import './style.scss'
 
-const ChatLogLoader = () => {
+const ChatLogLoader = ({ chatType }) => {
+  let message = 'Estou a gerar os teus relatórios aguarda um momento...'
+
+  switch (chatType) {
+    case 'free_form':
+      message = 'Estou a processar a tua resposta...'
+      break
+    case 'surprise':
+    case 'structured':
+    default:
+      break
+  }
+
   return (
     <div className='chatbot__message'>
       <div className='chatbot__message-empty' />
@@ -17,13 +29,17 @@ const ChatLogLoader = () => {
         <p className='chatbot__message-bot' >
           <FontAwesomeIcon icon={faRobot} />
 
-          Estou a gerar os teus relatórios aguarda um momento...
+          {message}
 
           <Spinner className='chatbot__message-spinner' animation="border" />
         </p>
       </div>
     </div>
   )
+}
+
+ChatLogLoader.propTypes = {
+  chatType: PropTypes.oneOf(['structured', 'surprise', 'free_form']).isRequired,
 }
 
 const ChatLoading = () => {
@@ -34,7 +50,14 @@ const ChatLoading = () => {
   )
 }
 
-const ChatBotMessage = ({ message, type = 'bot', timeStamp, hasReport = false, onGetReports = () => { } }) => {
+const ChatBotMessage = ({
+  message,
+  type = 'bot',
+  isRequesting = false,
+  timeStamp,
+  hasReport = false,
+  onGetReports = () => { }
+}) => {
   const messageStyle = type === 'user' ? 'chatbot__message-user' : 'chatbot__message-bot'
   const messageStyleId = type === 'user' ? 'tms_user' : 'tms_bot'
   const messageAlignment = type === 'user' ? 'chatbot__message-align-right' : 'chatbot__message-align-left'
@@ -46,7 +69,7 @@ const ChatBotMessage = ({ message, type = 'bot', timeStamp, hasReport = false, o
           <p>{message}</p>
 
           {hasReport && (
-            <Button className='chatbot__message-btn' variant='primary' onClick={onGetReports}>
+            <Button disabled={isRequesting} className='chatbot__message-btn' variant='primary' onClick={onGetReports}>
               Gerar Relatório
             </Button>
           )}
@@ -60,29 +83,31 @@ const ChatBotMessage = ({ message, type = 'bot', timeStamp, hasReport = false, o
 ChatBotMessage.propTypes = {
   type: PropTypes.oneOf(['user', 'bot']),
   hasReport: PropTypes.bool,
+  isRequesting: PropTypes.bool,
   message: PropTypes.object.isRequired,
   timeStamp: PropTypes.instanceOf(moment).isRequired,
   onGetReports: PropTypes.func
 }
 
 
-const ChatLog = ({ messages, isUpdating = false, isRequesting = false, onGenerateReport }) => {
+const ChatLog = ({ chatType, messages, isUpdating = false, isRequesting = false, onGenerateReport }) => {
   return (
     <Container className="chatbot__messages">
       {isUpdating && <ChatLoading />}
 
-      {isRequesting && <ChatLogLoader />}
+      {isRequesting && <ChatLogLoader chatType={chatType} />}
 
-      {messages.map(({ type, message, timeStamp, finished, data }, index) => {
+      {messages.map(({ type, message, timeStamp, has_report }, index) => {
         const keyID = timeStamp.format("M_D_YYYY_h_mm_ss_a") + index
 
         return (
           <ChatBotMessage
             key={keyID}
             type={type}
+            isRequesting={isRequesting}
             message={message}
             timeStamp={timeStamp}
-            hasReport={finished}
+            hasReport={has_report}
             onGetReports={() => onGenerateReport(message)}
           />
         )
@@ -92,6 +117,7 @@ const ChatLog = ({ messages, isUpdating = false, isRequesting = false, onGenerat
 }
 
 ChatLog.propTypes = {
+  chatType: PropTypes.oneOf(['structured', 'surprise', 'free_form']).isRequired,
   isUpdating: PropTypes.bool,
   isRequesting: PropTypes.bool,
   messages: PropTypes.arrayOf(PropTypes.shape({

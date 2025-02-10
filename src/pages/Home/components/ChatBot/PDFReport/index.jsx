@@ -202,6 +202,15 @@ const PDFReport = ({ data, innerRef }) => {
                             <h5>{landmark.name}</h5>
 
                             <p>--</p>
+
+
+                            <p>
+                              Preço estimado de Entrada:
+
+                              <strong>
+                                €€
+                              </strong>
+                            </p>
                           </div>
                         </div>
                       </td>
@@ -250,6 +259,13 @@ const PDFReport = ({ data, innerRef }) => {
                             <h5>{restaurant.name}</h5>
 
                             <p>--</p>
+
+                            <p>
+                              Preço Médio por Pessoa:
+                              <strong>
+                                €€€
+                              </strong>
+                            </p>
                           </div>
                         </div>
                       </td>
@@ -294,6 +310,13 @@ const PDFReport = ({ data, innerRef }) => {
                             <h5>{hotel.name}</h5>
 
                             <p>--</p>
+
+                            <p>
+                              Preço Médio por Pessoa:
+                              <strong>
+                                €€€
+                              </strong>
+                            </p>
                           </div>
                         </div>
                       </td>

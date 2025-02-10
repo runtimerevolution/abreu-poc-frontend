@@ -95,8 +95,21 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
         <div className='report-modal__image-group-list'>
           {landmarks.map((landmark, index) => (
             <div key={index} className='report-modal__image-group-item'>
-              <img src={landmark.image} alt={landmark.name} />
-              <p>{landmark.name}</p>
+              <div className='report-modal__image-group-item-top'>
+                <img src={landmark.image} alt={landmark.name} />
+                <h5>{landmark.name}</h5>
+              </div>
+              <div>
+                <p>--</p>
+
+                <p>
+                  Preço de admissão:
+
+                  <strong>
+                    €€
+                  </strong>
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -113,8 +126,21 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
         <div className='report-modal__image-group-list'>
           {restaurants.map((restaurant, index) => (
             <div key={index} className='report-modal__image-group-item'>
-              <img src={restaurant.image} alt={restaurant.name} />
-              <p>{restaurant.name}</p>
+              <div className='report-modal__image-group-item-top'>
+                <img src={restaurant.image} alt={restaurant.name} />
+                <h5>{restaurant.name}</h5>
+              </div>
+              <div>
+                <p>--</p>
+
+                <p>
+                  Preço estimado:
+
+                  <strong>
+                    €€€
+                  </strong>
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -131,8 +157,21 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
         <div className='report-modal__image-group-list'>
           {hotels.map((hotel, index) => (
             <div key={index} className='report-modal__image-group-item'>
-              <img src={hotel.image} alt={hotel.name} />
-              <p>{hotel.name}</p>
+              <div className='report-modal__image-group-item-top'>
+                <img src={hotel.image} alt={hotel.name} />
+                <h5>{hotel.name}</h5>
+              </div>
+              <div>
+                <p>--</p>
+
+                <p>
+                  Preço por pessoa:
+
+                  <strong>
+                    €€€€
+                  </strong>
+                </p>
+              </div>
             </div>
           ))}
         </div>

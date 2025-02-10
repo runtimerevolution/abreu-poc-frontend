@@ -238,6 +238,7 @@ const ChatBot = () => {
         </Nav>
 
         <ChatLog
+          chatType={chatType}
           isUpdating={isUpdating}
           isRequesting={isThonking}
           messages={reversedChatLog}
