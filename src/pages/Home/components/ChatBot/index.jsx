@@ -190,6 +190,7 @@ const ChatBot = () => {
     if (!userPrompt) return
 
     const updatedChatLog = [...chatHistory, { type: 'user', message: userPrompt, timeStamp: moment() }]
+    setChatHistory(updatedChatLog)
     if (['structured', 'surprise'].includes(chatType)) {
       let currentKey = promptKeys[0]
 
@@ -231,7 +232,7 @@ const ChatBot = () => {
             <Nav.Link eventKey='structured'>Estruturado</Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link eventKey='surprise'>Suprende-me!</Nav.Link>
+            <Nav.Link eventKey='surprise'>Surpreende-me!</Nav.Link>
           </Nav.Item>
           <Nav.Item>
             <Nav.Link eventKey='free_form'>Conversa Livre</Nav.Link>

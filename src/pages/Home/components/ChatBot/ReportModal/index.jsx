@@ -30,7 +30,7 @@ const FlightTraject = ({ flight }) => {
           <FontAwesomeIcon icon={faPlaneArrival} />
         </div>
 
-        <p>{durationHour}h{durationMinutes}m</p>
+        <p>{durationHour}h{durationMinutes ? `${durationMinutes}m` : ''}</p>
       </div>
 
       <p>{endTime}</p>
@@ -43,7 +43,7 @@ FlightTraject.propTypes = {
 }
 
 const ReportModal = ({ data, open = false, onClose = () => { } }) => {
-  const [selectedTab, setSelectedTab] = useState('landmarks')
+  const [selectedTab, setSelectedTab] = useState('flights')
 
   const pdfRef = useRef(null)
   const reactToPrintFn = useReactToPrint({ contentRef: pdfRef, preserveAfterPrint: true })
@@ -58,13 +58,13 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
 
     return (
       <div className='report-modal__activities'>
-        {mainKeys.map((key, index) => {
+        {mainKeys.map((key) => {
           const day = activities[key]
           const dayKeys = Object.keys(day)
 
           return (
             <div key={key} className='report-modal__activities-day'>
-              <h4>Dia {index + 1}:</h4>
+              <h4>{key}:</h4>
 
               <div className='report-modal__activities-day-periods'>
                 {dayKeys.map((period, index) => {
@@ -231,6 +231,9 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
   }
 
   const destination = data.destination || ''
+  const price = data.price
+    ? data.price.contains('EUR') || data.price.contains('€') ? data.price : `${data.price}€`
+    : 'N/A'
   return (
     <Modal dialogClassName='report-modal' show={open} onHide={onClose}>
       <Modal.Header closeButton>
@@ -265,7 +268,7 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
             </p>
 
             <p className='report-modal__text'>
-              Preço Total Estimado: <strong>{data.price || 'N/A'}</strong>
+              Preço Total Estimado: <strong>{price}</strong>
             </p>
           </div>
         </div>

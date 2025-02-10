@@ -142,7 +142,7 @@ const PDFReport = ({ data, innerRef }) => {
                       <tr className={rowStyle} key={key}>
                         <td colSpan='2'>
                           <div key={key} className='pdf-report__activities-day'>
-                            <h4>{index + 1} Dia:</h4>
+                            <h4>{key}:</h4>
 
                             <div className='pdf-report__activities-day-periods'>
                               {dayKeys.map((period, index) => {
@@ -257,7 +257,7 @@ const PDFReport = ({ data, innerRef }) => {
                           <div className='pdf-report__image-group-item-info'>
                             <h5>{restaurant.name}</h5>
 
-                            <p>--</p>
+                            {/* <p>--</p> */}
 
                             <p>
                               Preço Médio por Pessoa:
@@ -308,7 +308,7 @@ const PDFReport = ({ data, innerRef }) => {
                           <div className='pdf-report__image-group-item-info'>
                             <h5>{hotel.name}</h5>
 
-                            <p>--</p>
+                            {/* <p>--</p> */}
 
                             <p>
                               Preço Médio por Pessoa:
