@@ -201,8 +201,7 @@ const PDFReport = ({ data, innerRef }) => {
                           <div className='pdf-report__image-group-item-info'>
                             <h5>{landmark.name}</h5>
 
-                            <p>--</p>
-
+                            <p>{landmark.description || '--'}</p>
 
                             <p>
                               Preço estimado de Entrada:

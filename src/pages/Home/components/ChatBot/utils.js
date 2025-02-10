@@ -179,60 +179,34 @@ export const generateRandomOption = (hasCity = '') => {
 
 
 export const parseResponseData = (data) => {
-  if (!data) return null
+  if (!data || !data.trip_plans) return []
 
-  if (Array.isArray(data)) {
-    const _data = data.map((item) => {
-      return {
-        ...item,
-        image: generateRandomUrlForImg(),
-        restaurants: item.restaurants.map((restaurant) => {
-          return {
-            name: restaurant,
-            image: generateRandomUrlForImg()
-          }
-        }),
-        hotel_list: item.hotel_list.map((hotel) => {
-          return {
-            name: hotel,
-            image: generateRandomUrlForImg()
-          }
-        }),
-        landmarks: item.landmarks.map((landmark) => {
-          return {
-            name: landmark,
-            image: generateRandomUrlForImg()
-          }
-        })
-      }
-    })
-
-    return _data
-  } else {
-    return [{
-      ...data,
+  const _data = data.trip_plans.map((item) => {
+    return {
+      ...item,
       image: generateRandomUrlForImg(),
-      restaurants: data.restaurants.map((restaurant) => {
+      restaurants: item.restaurants.map((restaurant) => {
         return {
           name: restaurant,
           image: generateRandomUrlForImg()
         }
       }),
-      hotel_list: data.hotel_list.map((hotel) => {
+      hotel_list: item.hotel_list.map((hotel) => {
         return {
           name: hotel,
           image: generateRandomUrlForImg()
         }
       }),
-      landmarks: data.landmarks.map((landmark) => {
+      landmarks: item.landmarks.map((landmark) => {
         return {
-          name: landmark,
+          ...landmark,
           image: generateRandomUrlForImg()
         }
       })
-    }]
-  }
+    }
+  })
 
+  return _data
 }
 
 export const parseFreeResponseData = (data) => {

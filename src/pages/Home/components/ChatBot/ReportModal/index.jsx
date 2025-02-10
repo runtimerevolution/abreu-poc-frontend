@@ -100,7 +100,7 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
                 <h5>{landmark.name}</h5>
               </div>
               <div>
-                <p>--</p>
+                <p>{landmark.description || '--'}</p>
 
                 <p>
                   Preço de admissão:

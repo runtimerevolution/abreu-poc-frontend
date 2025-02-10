@@ -45,7 +45,8 @@ const ChatBot = () => {
     const options = { method: 'GET' }
     const response = await fetch(`${api_url}/questions`, options)
     if (response.ok) {
-      const aiPrompts = await response.json()
+      const data = await response.json()
+      const aiPrompts = data?.questions || []
       const aiPromptKeys = aiPrompts.map(({ key }) => key)
       const generatedPrompts = generatePrompts(aiPrompts)
       setPrompts(generatedPrompts)
