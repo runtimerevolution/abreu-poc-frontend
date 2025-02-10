@@ -280,8 +280,8 @@ const PDFReport = ({ data, innerRef }) => {
   }
 
   const renderHotels = () => {
-    const { hotel_list } = data
-    if (!hotel_list) return null
+    const { hotels } = data
+    if (!hotels) return null
 
     return (
       <tr className='pdf-report__table-row-no-border'>
@@ -296,8 +296,8 @@ const PDFReport = ({ data, innerRef }) => {
             </thead>
             <tbody>
               {
-                hotel_list.map((hotel, index) => {
-                  const rowStyle = hotel_list.length - 1 !== index ? 'pdf-report__table-row-no-border' : ''
+                hotels.map((hotel, index) => {
+                  const rowStyle = hotels.length - 1 !== index ? 'pdf-report__table-row-no-border' : ''
 
                   return (
                     <tr key={hotel} className={rowStyle}>

@@ -149,7 +149,7 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
   }
 
   const renderHotels = () => {
-    const hotels = data.hotel_list || []
+    const hotels = data.hotels || []
     if (hotels.length === 0) return null
 
     return (
@@ -231,8 +231,9 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
   }
 
   const destination = data.destination || ''
-  const price = data.price
-    ? data.price.contains('EUR') || data.price.contains('€') ? data.price : `${data.price}€`
+  const recievedPrice = data.price
+  const price = recievedPrice
+    ? recievedPrice.includes('EUR') || recievedPrice.includes('€') ? data.price : `${data.price}€`
     : 'N/A'
   return (
     <Modal dialogClassName='report-modal' show={open} onHide={onClose}>

@@ -191,7 +191,7 @@ export const parseResponseData = (data) => {
           image: generateRandomUrlForImg()
         }
       }),
-      hotel_list: item.hotel_list.map((hotel) => {
+      hotels: item.hotels.map((hotel) => {
         return {
           name: hotel,
           image: generateRandomUrlForImg()

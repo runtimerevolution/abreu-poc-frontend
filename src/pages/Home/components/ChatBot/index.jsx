@@ -80,8 +80,8 @@ const ChatBot = () => {
     const response = await fetch(`${api_url}/prompt`, options)
     if (response.ok) {
       const data = await response.json()
-      console.log(data)
-      setReports(parseResponseData(data))
+      console.log('sendPromptsToAPI', data)
+      setReports(data.trip_plans || [])
       setChatHistory([...updatedChatLog, generateOfflineBotMsg('generate_options'), generateOfflineBotMsg('reset')])
       setIsNoChat(true)
     } else {

@@ -1,6 +1,11 @@
 .report-modal {
   max-width: 1000px;
 
+  & img {
+    width: 200px;
+    height: 200px;
+  }
+
   &__text {
     color: #54667A;
     margin-bottom: 0px;
