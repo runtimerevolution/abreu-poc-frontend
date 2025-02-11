@@ -105,17 +105,17 @@ export const generateRandomOption = (hasCity = '') => {
     id: uuidV4(),
     image: generateRandomUrlForImg(),
     landmarks: [
-      { image: generateRandomUrlForImg(), name: "Museu do Prado" },
-      { image: generateRandomUrlForImg(), name: "Palácio Real de Madrid" },
-      { image: generateRandomUrlForImg(), name: "Parque do Retiro" },
-      { image: generateRandomUrlForImg(), name: "Plaza Mayor" }
+      { image: generateRandomUrlForImg(), name: "Museu do Prado", description: 'dsadasdas dadsads' },
+      { image: generateRandomUrlForImg(), name: "Palácio Real de Madrid", description: 'dsadasdas dadsads' },
+      { image: generateRandomUrlForImg(), name: "Parque do Retiro", description: 'dsadasdas dadsads' },
+      { image: generateRandomUrlForImg(), name: "Plaza Mayor", description: 'dsadasdas dadsads' }
     ],
     restaurants: [
       { image: generateRandomUrlForImg(), name: "Casa Lucio" },
       { image: generateRandomUrlForImg(), name: "Sobrino de Botín" },
       { image: generateRandomUrlForImg(), name: "DiverXO" }
     ],
-    hotel_list: [
+    hotels: [
       { image: generateRandomUrlForImg(), name: "Hotel Regina" },
       { image: generateRandomUrlForImg(), name: "Hotel Emperador" },
       { image: generateRandomUrlForImg(), name: "Hotel Catalonia Plaza Mayor" }

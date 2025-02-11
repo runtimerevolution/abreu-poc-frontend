@@ -14,8 +14,7 @@ import {
   generatePrompts,
   generateRandomOption,
   INITIAL_PROMPTS,
-  parseFreeResponseData,
-  parseResponseData
+  parseFreeResponseData
 } from "./utils";
 // Assets
 import { faClose, faComment } from "@fortawesome/free-solid-svg-icons"

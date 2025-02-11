@@ -259,8 +259,6 @@ const PDFReport = ({ data, innerRef }) => {
                           <div className='pdf-report__image-group-item-info'>
                             <h5>{restaurant.name}</h5>
 
-                            {/* <p>--</p> */}
-
                             <p>
                               Preço Médio por Pessoa:
                               <strong>
@@ -309,8 +307,6 @@ const PDFReport = ({ data, innerRef }) => {
 
                           <div className='pdf-report__image-group-item-info'>
                             <h5>{hotel.name}</h5>
-
-                            {/* <p>--</p> */}
 
                             <p>
                               Preço Médio por Pessoa:

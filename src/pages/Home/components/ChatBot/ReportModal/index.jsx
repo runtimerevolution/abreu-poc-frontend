@@ -101,7 +101,7 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
                 <img src={landmark.image} alt={landmark.name} />
                 <h5>{landmark.name}</h5>
               </div>
-              <div>
+              <div className='report-modal__image-group-item-bot'>
                 <p>{landmark.description || '--'}</p>
 
                 <p>
@@ -132,8 +132,8 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
                 <img src={restaurant.image} alt={restaurant.name} />
                 <h5>{restaurant.name}</h5>
               </div>
-              <div>
-                <p>--</p>
+              <div className='report-modal__image-group-item-bot'>
+                <div />
 
                 <p>
                   Preço estimado:
@@ -163,14 +163,14 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
                 <img src={hotel.image} alt={hotel.name} />
                 <h5>{hotel.name}</h5>
               </div>
-              <div>
-                <p>--</p>
+              <div className='report-modal__image-group-item-bot'>
+                <div />
 
                 <p>
                   Preço por pessoa:
 
                   <strong>
-                    €€€€
+                    €€€
                   </strong>
                 </p>
               </div>
@@ -182,9 +182,8 @@ const ReportModal = ({ data, open = false, onClose = () => { } }) => {
   }
 
   const renderFlights = () => {
-    const dataDeIda = data.departures_from_origin ? data.departures_from_origin[0].split(',')[0] : 'N/A'
+    const dataDeIda = data.departures_from_origin ? data.departures_from_origin[0].split(',')[0] : null
     const dataDeVolta = data.departures_from_destination ? data.departures_from_destination[0].split(',')[0] : 'N/A'
-
 
     return (
       <div className='report-modal__flights'>

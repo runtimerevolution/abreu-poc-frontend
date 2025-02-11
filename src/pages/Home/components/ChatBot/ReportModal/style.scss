@@ -123,6 +123,12 @@
           bottom: 0px;
         }
       }
+
+      &-bot {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
     }
   }
 
