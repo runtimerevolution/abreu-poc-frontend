@@ -15,6 +15,8 @@ const FlightTraject = ({ flight }) => {
   const [durationHour, durationMinutes] = duration.split('h')
   const endTime = moment(time, 'HH:mm').add(durationHour, 'hours').add(durationMinutes, 'minutes').format('HH:mm')
 
+  const hoursText = durationHour ? `${durationHour}h` : ''
+  const minutesText = durationMinutes ? `${durationMinutes}m` : ''
   return (
     <div className='report-modal__flight' key={flight}>
       <p>{time}</p>
@@ -26,7 +28,7 @@ const FlightTraject = ({ flight }) => {
           <FontAwesomeIcon icon={faPlaneArrival} />
         </div>
 
-        <p>{durationHour}h{durationMinutes}m</p>
+        <p>{hoursText}{minutesText}</p>
       </div>
 
       <p>{endTime}</p>
