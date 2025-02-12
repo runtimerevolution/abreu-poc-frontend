@@ -179,28 +179,28 @@ export const generateRandomOption = (hasCity = '') => {
 
 
 export const parseResponseData = (data) => {
-  if (!data || !data.trip_plans) return []
+  if (!data) return []
 
-  const _data = data.trip_plans.map((item) => {
+  const _data = data.map((item) => {
     return {
       ...item,
-      image: generateRandomUrlForImg(),
+      image: item.image ? item.image : generateRandomUrlForImg(),
       restaurants: item.restaurants.map((restaurant) => {
         return {
-          name: restaurant,
-          image: generateRandomUrlForImg()
+          ...restaurant,
+          image: restaurant.image ? restaurant.image : generateRandomUrlForImg()
         }
       }),
       hotels: item.hotels.map((hotel) => {
         return {
-          name: hotel,
-          image: generateRandomUrlForImg()
+          ...hotel,
+          image: hotel.image ? hotel.image : generateRandomUrlForImg()
         }
       }),
       landmarks: item.landmarks.map((landmark) => {
         return {
           ...landmark,
-          image: generateRandomUrlForImg()
+          image: landmark.image ? landmark.image : generateRandomUrlForImg()
         }
       })
     }

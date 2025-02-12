@@ -14,7 +14,8 @@ import {
   generatePrompts,
   generateRandomOption,
   INITIAL_PROMPTS,
-  parseFreeResponseData
+  parseFreeResponseData,
+  parseResponseData
 } from "./utils";
 // Assets
 import { faClose, faComment } from "@fortawesome/free-solid-svg-icons"
@@ -80,7 +81,9 @@ const ChatBot = () => {
     if (response.ok) {
       const data = await response.json()
       console.log('sendPromptsToAPI', data)
-      setReports(data.trip_plans || [])
+      const msg = parseResponseData(data.trip_plans || [])
+      console.log('sendPromptsToAPI', msg)
+      setReports(msg)
       setChatHistory([...updatedChatLog, generateOfflineBotMsg('generate_options'), generateOfflineBotMsg('reset')])
       setIsNoChat(true)
     } else {
